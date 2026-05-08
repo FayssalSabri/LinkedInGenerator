@@ -13,7 +13,7 @@ RÈGLES DE RÉDACTION :
 2. STRUCTURE : Utilise des sauts de ligne aérés pour une lecture fluide sur mobile.
 3. STYLE : Utilise des emojis de manière professionnelle (pas plus de 3-4 par post).
 4. CTA : Termine par une question ou un appel à l'action clair.
-5. LIMITE : La publication doit faire moins de 1300 caractères.
+5. LIMITE STRICTE : La publication finale DOIT ABSOLUMENT faire moins de 1300 caractères (espaces compris). C'est une limite technique infranchissable. Rédige de manière concise.
 
 PROCESSUS DE RÉFLEXION (Chain-of-Thought) :
 Avant de rédiger, analyse le ton demandé et les valeurs de l'entreprise pour choisir l'angle le plus efficace. Explique ta stratégie dans la "note d'intention".

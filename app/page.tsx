@@ -2,19 +2,14 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
-import Image from 'next/image';
 import Form from '@/components/Form';
 import Result from '@/components/Result';
 import { type GenerationParams, type GenerationResponse } from '@/lib/schemas';
-import { BespokeIcons } from '@/components/BespokeIcons';
-
-interface ExtendedResponse extends GenerationResponse {
-  _cached?: boolean;
-}
+import Link from 'next/link';
+import { PenSquare, History } from 'lucide-react';
 
 export default function Home() {
-  const [result, setResult] = useState<ExtendedResponse | null>(null);
+  const [result, setResult] = useState<GenerationResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,7 +32,7 @@ export default function Home() {
       }
 
       setResult(data);
-
+      
       const saved = localStorage.getItem('linkedin_history');
       const history = saved ? JSON.parse(saved) : [];
       const newHistoryItem = {
@@ -56,99 +51,75 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen bg-[#191A1A] font-sans text-[#E8E8E8] overflow-hidden flex flex-col relative">
-      {/* Minimalist Header */}
-      <nav className="relative z-50 bg-[#191A1A]/80 backdrop-blur-md border-b border-white/5 py-3 px-6 h-12 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
-              <Image 
-                src="/logo.svg" 
-                alt="Forge Studio" 
-                fill 
-                className="object-contain"
-              />
-            </div>
-            <span className="font-semibold text-sm tracking-tight text-white/90">Forge Studio</span>
-          </Link>
-          <div className="h-3 w-[1px] bg-white/10" />
-          <div className="flex items-center gap-2">
-            <Link href="/" className="px-2.5 py-0.5 rounded text-[11px] font-medium bg-white/5 text-white">Studio</Link>
-            <Link href="/history" className="px-2.5 py-0.5 rounded text-[11px] font-medium text-slate-500 hover:text-white transition-colors">History</Link>
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#191A1A]">
+      {/* Navigation Bar - Even cleaner */}
+      <nav className="flex-shrink-0 h-16 border-b border-white/[0.03] bg-[#191A1A] z-50 flex items-center justify-between px-8 lg:px-16">
+        <div className="flex items-center gap-3 group">
+          <div className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
+            <img 
+              src="/logo.svg" 
+              alt="Forge Studio" 
+              className="w-full h-full object-contain p-1.5"
+            />
           </div>
+          <span className="font-semibold text-sm tracking-tight text-white/90">Forge Studio</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-            <span className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Engine Online</span>
-          </div>
+        <div className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
+          <Link href="/" className="nav-item !px-5 !py-1.5 nav-item-active !rounded-lg text-xs">
+            <PenSquare className="w-3.5 h-3.5" />
+            <span>Forge</span>
+          </Link>
+          <Link href="/history" className="nav-item !px-5 !py-1.5 nav-item-inactive !rounded-lg text-xs">
+            <History className="w-3.5 h-3.5" />
+            <span>Library</span>
+          </Link>
         </div>
       </nav>
 
-      <main className="flex-1 flex overflow-hidden">
-        {/* Left Column: Configuration Console */}
-        <div className="w-[560px] border-r border-white/5 flex flex-col bg-[#191A1A]">
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-12">
-            <div className="space-y-2">
-              <h1 className="text-3xl font-medium tracking-tight text-white">Composition</h1>
-              <p className="text-slate-400 text-sm">Créez des publications impactantes avec l'IA de Forge Studio</p>
+      {/* Main Workspace - More generous spacing */}
+      <main className="flex-1 overflow-hidden w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-12 p-8 lg:p-12">
+        
+        {/* Left Column: Form - Vertically Centered and cleaner */}
+        <div className="w-full lg:w-[42%] h-full flex flex-col justify-center overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col max-h-full"
+          >
+            <div className="mb-10">
+              <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Studio Créatif</h1>
+              <p className="text-base text-slate-400 font-medium leading-relaxed max-w-md">
+                Configurez votre identité et votre message pour générer une publication LinkedIn à forte valeur ajoutée.
+              </p>
             </div>
-
-            <div className="search-container p-8">
+            
+            <div className="overflow-y-auto custom-scrollbar pr-4">
               <Form onSubmit={handleSubmit} isLoading={isLoading} />
-
               <AnimatePresence>
                 {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 p-4 bg-red-900/10 border border-red-500/20 text-red-400 text-[11px] rounded-lg"
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-8 p-4 bg-red-500/5 border border-red-500/20 text-red-400 text-sm font-medium rounded-2xl flex items-center gap-3"
                   >
-                    Erreur: {error}
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    {error}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Result / Preview - More breathing space */}
+        <div className="w-full lg:w-[58%] h-full flex flex-col overflow-hidden relative">
+          <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl">
+            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} />
           </div>
         </div>
 
-        {/* Right Column: Preview & Intelligence */}
-        <div className="flex-1 flex flex-col bg-[#191A1A] overflow-hidden">
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-            <div className="max-w-[700px] mx-auto w-full">
-              <AnimatePresence mode="wait">
-                {(isLoading || result) ? (
-                  <Result
-                    publication={result?.publication}
-                    note={result?.note}
-                    isLoading={isLoading}
-                    isCached={result?._cached}
-                  />
-                ) : (
-                  <div className="h-[70vh] flex flex-col items-center justify-center text-center opacity-20 grayscale">
-                    <BespokeIcons.Sparkles className="w-16 h-16 mb-6 text-slate-500" />
-                    <p className="text-sm font-medium tracking-wide uppercase">En attente de configuration...</p>
-                  </div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
       </main>
-
-      {/* Minimal Footer */}
-      <footer className="py-2 px-6 border-t border-white/5 text-[9px] text-slate-600 flex justify-between items-center bg-[#191A1A]">
-        <div className="flex items-center gap-4">
-          <span>&copy; 2026 Forge Studio</span>
-        </div>
-        <div className="flex gap-4 uppercase tracking-tighter">
-          <span>v2.4.0</span>
-          <span>Security Secured</span>
-        </div>
-      </footer>
     </div>
   );
 }
-
-
-
