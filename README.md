@@ -1,50 +1,48 @@
-# LinkedIn Generator - Impalia
+# LinkedIn Content Studio
 
-Ce projet est la restitution du test technique pour le poste d'Ingénieur(e) IA Full-Stack chez Impalia.
-Il s'agit d'une solution web permettant de générer des publications LinkedIn optimisées pour les PME, en s'appuyant sur l'IA (Groq API).
+Ce projet est une solution web professionnelle permettant de générer des publications LinkedIn optimisées pour les entreprises, en s'appuyant sur l'intelligence artificielle.
 
-## 🎯 Philosophie du Projet : Qualité & Robustesse
+## Philosophie du Projet
 
-Conformément aux consignes du test technique, ce service privilégie la **qualité d'exécution** et la **fiabilité**. Le design complexe a été écarté au profit d'une interface robuste, ergonomique et directement utilisable.
+Ce service privilégie la qualité d'exécution et la robustesse technique. L'interface est conçue comme un studio de création minimaliste, ergonomique et performant.
 
-- **Design Épuré & Simple** : Interface claire, responsive, se concentrant sur la saisie du besoin.
-- **Architecture Sécurisée** : Route API backend (`/api/generate`) protégeant totalement la clé d'API Groq.
-- **Validation Stricte** : Utilisation de **Zod** côté client et serveur pour garantir le respect des longueurs imposées (Description: 2000, Brief: 500, Publication: 1300).
-- **Prompt Engineering Spécialisé** : Format de sortie strictement imposé en JSON natif avec séparation de la publication et de la note d'intention.
+- Design Studio : Interface sombre et épurée, optimisée pour la concentration et le confort visuel.
+- Architecture Sécurisée : Route API backend protégeant les clés d'API et gérant les requêtes de manière centralisée.
+- Validation Stricte : Utilisation de schémas de données rigoureux pour garantir le respect des contraintes de formatage et de longueur.
+- Ingénierie de Prompt : Système de génération orchestré pour produire des contenus structurés incluant une note d'intention stratégique.
 
-## 🛠️ Stack Technique
+## Stack Technique
 
-- **Framework** : Next.js 14 (App Router)
-- **Langage** : TypeScript
-- **Style** : Tailwind CSS
-- **Validation** : Zod & React Hook Form
-- **IA** : API Groq (Modèle `llama-3.3-70b-versatile`) - *Choisi pour son temps de réponse fulgurant.*
+- Framework : Next.js 14 (App Router)
+- Langage : TypeScript
+- Style : Tailwind CSS
+- Animations : Framer Motion
+- Validation : Zod & React Hook Form
+- Intelligence Artificielle : API Groq (Modèle Llama 3)
 
-## 🚀 Lancement Local
+## Lancement Local
 
-1. **Cloner et installer les dépendances**
+1. Installation des dépendances
    ```bash
    npm install
    ```
 
-2. **Configuration Environnement**
-   Créez un fichier `.env.local` à la racine du projet et ajoutez votre clé :
+2. Configuration Environnement
+   Créez un fichier .env.local à la racine du projet et ajoutez votre clé :
    ```env
    GROQ_API_KEY=votre_cle_api_groq
    ```
 
-3. **Lancement du serveur de développement**
+3. Lancement du serveur
    ```bash
    npm run dev
    ```
-   L'application sera disponible sur [http://localhost:3000](http://localhost:3000).
+   L'application sera disponible sur http://localhost:3000.
 
-## ⚠️ Limites Identifiées (Version Actuelle)
+## Limites Identifiées
 
-Comme demandé dans l'énoncé, voici les limites actuelles du système :
+Voici une analyse des limites techniques actuelles du système :
 
-1. **Mise en cache en mémoire volatile** : Le système utilise une `Map` en RAM (`lib/cache.ts`). Dans un environnement serverless (Vercel, AWS Lambda), ce cache est détruit au redémarrage des instances (cold starts).
-2. **Historique local (Local Storage)** : Les archives (si implémentées) reposent sur le navigateur. Aucune donnée n'est persistée en base, empêchant le travail collaboratif.
-3. **Absence de système de RAG** : L'IA ne peut actuellement pas analyser l'historique complet d'une entreprise pour imiter ses tournures de phrases passées de manière fine.
-
-*Pour plus de détails sur les pistes d'amélioration à 6 mois, veuillez consulter le document PDF de Restitution.*
+1. Mise en cache volatile : Le système utilise une gestion de cache en mémoire vive. Dans un environnement serverless, ce cache est réinitialisé lors des redémarrages d'instances.
+2. Persistance locale : La gestion de l'historique repose sur le stockage local du navigateur. Les données ne sont pas partagées entre différents appareils.
+3. Absence de contexte long : Le système actuel génère des publications à partir d'un brief ponctuel et ne possède pas de mémoire à long terme de l'identité de marque globale au-delà des paramètres saisis.
