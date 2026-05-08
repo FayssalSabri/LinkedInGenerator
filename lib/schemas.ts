@@ -7,7 +7,7 @@ export const generationSchema = z.object({
   brief: z.string()
     .min(5, "Le brief doit faire au moins 5 caractères.")
     .max(500, "Le brief ne peut pas dépasser 500 caractères."),
-  tone: z.enum(['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Sobre'], {
+  tone: z.enum(['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'], {
     error: "Veuillez sélectionner un ton valide."
   }),
 });
