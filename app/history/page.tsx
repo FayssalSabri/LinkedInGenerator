@@ -3,22 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
 import LinkedInPost from '@/components/LinkedInPost';
-
-interface LocalHistoryItem {
-  id: string;
-  timestamp: number;
-  params: {
-    description: string;
-    brief: string;
-    tone: string;
-  };
-  publication: string;
-  note: string;
-}
-
 import { BespokeIcons } from '@/components/BespokeIcons';
+import { PenSquare, History, Search, Copy, Check } from 'lucide-react';
 
 interface LocalHistoryItem {
   id: string;
@@ -31,22 +18,21 @@ interface LocalHistoryItem {
   publication: string;
   note: string;
 }
-
-const getToneIcon = (tone: string) => {
-  const Icon = BespokeIcons[tone as keyof typeof BespokeIcons] || BespokeIcons[tone.charAt(0).toUpperCase() + tone.slice(1) as keyof typeof BespokeIcons];
-  // Map specific tones to BespokeIcons
-  if (tone === 'Professionnel') return <BespokeIcons.Pro />;
-  if (tone === 'Chaleureux') return <BespokeIcons.Warm />;
-  if (tone === 'Expert') return <BespokeIcons.Expert />;
-  if (tone === 'Dynamique') return <BespokeIcons.Dynamic />;
-  if (tone === 'Créatif') return <BespokeIcons.Creative />;
-  return null;
-};
 
 export default function HistoryPage() {
   const [history, setHistory] = useState<LocalHistoryItem[]>([]);
   const [selected, setSelected] = useState<LocalHistoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (selected) {
+      await navigator.clipboard.writeText(selected.publication);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('linkedin_history');
@@ -61,143 +47,204 @@ export default function HistoryPage() {
     }
   };
 
+  // Reset copied state when selection changes
+  useEffect(() => {
+    setCopied(false);
+  }, [selected]);
+
   const filteredHistory = history.filter(item =>
     item.params.brief.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.publication.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  return (<div className="h-screen bg-[#191A1A] font-sans text-[#E8E8E8] overflow-hidden flex flex-col relative">
-    {/* Minimalist Header */}
-    <nav className="relative z-50 bg-[#191A1A]/80 backdrop-blur-md border-b border-white/5 py-4 px-6 h-14 flex items-center justify-between">
-      <div className="flex items-center gap-6">
-        <Link href="/" className="flex items-center gap-3 group">
+  return (
+    <div className="h-screen w-screen bg-[#191A1A] font-sans text-[#E8E8E8] overflow-hidden flex flex-col relative">
+      {/* Navigation Bar - Matches Studio exactly */}
+      <nav className="flex-shrink-0 h-16 border-b border-white/[0.03] bg-[#191A1A] z-50 flex items-center justify-between px-8 lg:px-16">
+        <div className="flex items-center gap-3 group">
           <div className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
-            <Image 
+            <img 
               src="/logo.svg" 
               alt="Forge Studio" 
-              fill 
-              className="object-contain"
+              className="w-full h-full object-contain p-1.5"
             />
           </div>
           <span className="font-semibold text-sm tracking-tight text-white/90">Forge Studio</span>
-        </Link>
-        <div className="h-4 w-[1px] bg-white/10" />
-        <div className="flex items-center gap-2">
-          <Link href="/" className="px-2.5 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-white transition-colors">Studio</Link>
-          <Link href="/history" className="px-2.5 py-0.5 rounded text-[11px] font-medium bg-white/5 text-white">History</Link>
         </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">Archive_Vault Secured</span>
-      </div>
-    </nav>
+        <div className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
+          <Link href="/" className="nav-item !px-5 !py-1.5 nav-item-inactive !rounded-lg text-xs">
+            <PenSquare className="w-3.5 h-3.5" />
+            <span>Forge</span>
+          </Link>
+          <Link href="/history" className="nav-item !px-5 !py-1.5 nav-item-active !rounded-lg text-xs">
+            <History className="w-3.5 h-3.5" />
+            <span>Library</span>
+          </Link>
+        </div>
+      </nav>
 
-    <main className="flex-1 flex overflow-hidden w-full max-w-[1440px] mx-auto">
-      {/* Thread Sidebar */}
-      <div className="w-[360px] border-r border-white/5 flex flex-col bg-[#191A1A]">
-        <div className="p-6 border-b border-white/5">
-          <div className="relative">
-            <BespokeIcons.Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Rechercher dans les archives..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/5 rounded-xl text-sm text-white focus:border-[#1FB8CD]/50 outline-none transition-all placeholder:text-slate-600 font-medium"
-            />
+      <main className="flex-1 flex overflow-hidden w-full max-w-[1600px] mx-auto">
+        {/* Thread Sidebar - Extremely Minimalist */}
+        <div className="w-[340px] flex flex-col bg-transparent mr-16">
+          <div className="pt-16 pb-10 px-8">
+            <h2 className="text-3xl font-bold text-white mb-10 tracking-tight">Library</h2>
+            <div className="relative group">
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#1FB8CD] transition-colors" />
+              <input
+                type="text"
+                placeholder="Search archives..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 py-3 bg-white/[0.02] border-b border-white/10 text-[14px] text-white focus:border-[#1FB8CD]/60 outline-none transition-all placeholder:text-slate-500 font-medium"
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1 pb-10">
+            <AnimatePresence mode="popLayout">
+              {filteredHistory.length === 0 ? (
+                <div className="h-40 flex flex-col items-center justify-center text-center opacity-10">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em]">Empty</p>
+                </div>
+              ) : (
+                filteredHistory.map((item) => (
+                  <motion.button
+                    key={item.id}
+                    layout
+                    onClick={() => setSelected(item)}
+                    className={`w-full text-left px-6 py-4 rounded-2xl transition-all duration-300 group relative ${selected?.id === item.id
+                        ? 'bg-white/[0.04] text-white'
+                        : 'text-slate-600 hover:text-slate-400 hover:bg-white/[0.02]'
+                      }`}
+                  >
+                    {selected?.id === item.id && (
+                      <motion.div 
+                        layoutId="active-dot"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#1FB8CD] rounded-full shadow-[0_0_10px_#1FB8CD]"
+                      />
+                    )}
+                    <div className="flex justify-between items-center mb-1">
+                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${selected?.id === item.id ? 'text-[#1FB8CD]' : 'text-slate-700'}`}>
+                        {item.params.tone}
+                      </span>
+                      <span className="text-[9px] font-bold tabular-nums opacity-20">
+                        {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                      </span>
+                    </div>
+                    <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${selected?.id === item.id ? 'text-white' : 'text-slate-500'}`}>
+                      {item.params.brief}
+                    </h4>
+                  </motion.button>
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+
+          {history.length > 0 && (
+            <div className="p-8 pb-12">
+              <button
+                onClick={clearHistory}
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-red-400/30 hover:text-red-400 transition-all"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Content Viewer - Fixed & Centered for maximum comfort */}
+        <div className="flex-1 overflow-hidden flex flex-col items-center justify-center">
+          <div className="w-full max-w-[1200px] px-12 overflow-y-auto custom-scrollbar max-h-screen py-12">
+            <AnimatePresence mode="wait">
+              {selected ? (
+                <motion.div
+                  key={selected.id}
+                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98, y: -20 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 120 }}
+                  className="space-y-16"
+                >
+                  {/* Header with Title */}
+                  <div className="pb-12 border-b border-white/[0.04]">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 text-[#1FB8CD]">
+                        <div className="w-2 h-2 rounded-full bg-[#1FB8CD] shadow-[0_0_12px_#1FB8CD]"></div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.25em]">Détails de l'archive</span>
+                      </div>
+                      <h2 className="text-5xl font-extrabold tracking-tight text-white leading-[1.1]">{selected.params.brief}</h2>
+                      <div className="flex items-center gap-8 text-slate-500 text-[11px] font-black uppercase tracking-[0.15em]">
+                        <div className="flex items-center gap-2 text-[#1FB8CD]">
+                          <div className="w-4 h-4 bg-[#1FB8CD]/10 rounded flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 bg-[#1FB8CD] rounded-full"></div>
+                          </div>
+                          {selected.params.tone}
+                        </div>
+                        <span className="opacity-20">/</span>
+                        <span>{new Date(selected.timestamp).toLocaleString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col lg:flex-row gap-16 items-start pt-16">
+                    {/* Publication on the left with its own Copy button inside */}
+                    <div className="w-full lg:w-[550px] flex-shrink-0 relative group">
+                      <div className="absolute right-6 top-6 z-20">
+                        <button
+                          onClick={handleCopy}
+                          className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-500 shadow-lg ${
+                            copied 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-white/10 text-white/50 hover:bg-[#1FB8CD] hover:text-white backdrop-blur-md border border-white/10'
+                          }`}
+                          title="Copier le texte"
+                        >
+                          {copied ? <Check className="w-5 h-5" strokeWidth={3} /> : <Copy className="w-5 h-5" />}
+                        </button>
+                      </div>
+                      <LinkedInPost content={selected.publication} />
+                    </div>
+
+                    {/* Note on the right */}
+                    {selected.note && (
+                      <div className="flex-1 space-y-8 lg:pt-16">
+                        <div className="flex items-center gap-3 text-slate-500">
+                          <div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center text-[#1FB8CD]">
+                            <BespokeIcons.Sparkles className="w-4 h-4" />
+                          </div>
+                          <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">Note Stratégique</h4>
+                        </div>
+                        <div className="bg-white/[0.01] border border-white/[0.04] rounded-[2.5rem] p-12 text-[20px] text-slate-400 leading-relaxed italic font-serif relative group">
+                          <span className="absolute top-6 left-8 text-6xl text-white/[0.03] font-serif select-none">“</span>
+                          <span className="relative z-10 block">
+                            {selected.note}
+                          </span>
+                          <span className="absolute bottom-4 right-8 text-6xl text-white/[0.03] font-serif select-none">”</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center justify-center text-center opacity-30"
+                >
+                  <div className="mb-8">
+                    <svg className="w-12 h-12 animate-spin-slow text-slate-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 translate-x-[0.2em]">
+                    Sélectionnez une archive...
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1.5">
-          <AnimatePresence mode="popLayout">
-            {filteredHistory.map((item) => (
-              <motion.button
-                key={item.id}
-                layout
-                onClick={() => setSelected(item)}
-                className={`w-full text-left p-4 rounded-xl transition-all group relative border ${selected?.id === item.id
-                    ? 'bg-white/10 text-white border-white/10'
-                    : 'text-slate-400 border-transparent hover:text-white hover:bg-white/5'
-                  }`}
-              >
-                <h4 className={`text-[14px] font-semibold truncate mb-1.5 ${selected?.id === item.id ? 'text-white' : 'text-slate-200'}`}>
-                  {item.params.brief}
-                </h4>
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                  <span className="text-[#1FB8CD]">{item.params.tone}</span>
-                  <span>•</span>
-                  <span>{new Date(item.timestamp).toLocaleDateString()}</span>
-                </div>
-              </motion.button>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        <div className="p-4 border-t border-white/5">
-          <button
-            onClick={clearHistory}
-            className="w-full py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-400/5 transition-all"
-          >
-            Clear Library
-          </button>
-        </div>
-      </div>
-
-      {/* Content Viewer */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#191A1A]">
-        <div className="max-w-[760px] mx-auto py-12 px-8">
-          <AnimatePresence mode="wait">
-            {selected ? (
-              <motion.div
-                key={selected.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-12"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-[#1FB8CD]">
-                    <BespokeIcons.Dashboard className="w-4 h-4" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Archive_Details</span>
-                  </div>
-                  <h2 className="text-3xl font-medium tracking-tight text-white">{selected.params.brief}</h2>
-                  <div className="flex items-center gap-4 text-slate-500 text-xs">
-                    <span>{selected.params.tone}</span>
-                    <span>•</span>
-                    <span>{new Date(selected.timestamp).toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="pt-8 border-t border-white/5">
-                  <LinkedInPost content={selected.publication} />
-                </div>
-
-                {selected.note && (
-                  <div className="space-y-4 pt-8 border-t border-white/5">
-                    <div className="flex items-center gap-2 text-[#1FB8CD]">
-                      <BespokeIcons.Sparkles className="w-4 h-4" />
-                      <h4 className="text-xs font-bold uppercase tracking-widest">Insights</h4>
-                    </div>
-                    <div className="bg-white/5 border border-white/5 rounded-xl p-6 text-sm text-slate-400 leading-relaxed italic">
-                      "{selected.note}"
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center opacity-20 py-20">
-                <BespokeIcons.Database className="w-12 h-12 mb-4" />
-                <p className="text-sm font-medium tracking-wide">Sélectionnez une archive pour l'inspecter</p>
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </main>
-
-    <footer className="py-3 px-6 border-t border-white/5 text-[10px] text-slate-500 flex justify-between items-center bg-[#191A1A]">
-      <span>&copy; 2026 Forge Studio • Search_Mode v2.4</span>
-    </footer>
-  </div>
+      </main>
+    </div>
   );
 }

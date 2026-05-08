@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LinkedInPost from './LinkedInPost';
 import { Copy, Check } from 'lucide-react';
+import { BespokeIcons } from './BespokeIcons';
 
 interface ResultProps {
   publication?: string;
@@ -70,29 +71,40 @@ export default function Result({ publication, note, isLoading }: ResultProps) {
             {/* LinkedIn Mockup */}
             <div className="w-full relative group max-w-[580px]">
               <div className="absolute -inset-4 bg-gradient-to-tr from-[#1FB8CD]/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
-              <LinkedInPost content={publication} />
               
-              {/* Floating Copy Button - Even more comfortable */}
-              <div className="absolute -right-6 top-6 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+              {/* Integrated Copy Button */}
+              <div className="absolute right-6 top-6 z-20">
                 <button
                   onClick={handleCopy}
-                  className="bg-[#1FB8CD] text-white p-4 rounded-2xl shadow-[0_10px_30px_rgba(31,184,205,0.3)] hover:bg-[#1DA8BA] transition-all hover:scale-110"
-                  title="Copier le contenu"
+                  className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-500 shadow-lg ${
+                    copied 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-white/10 text-white/50 hover:bg-[#1FB8CD] hover:text-white backdrop-blur-md border border-white/10'
+                  }`}
+                  title="Copier le texte"
                 >
-                  {copied ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                  {copied ? <Check className="w-5 h-5" strokeWidth={3} /> : <Copy className="w-5 h-5" />}
                 </button>
               </div>
+
+              <LinkedInPost content={publication} shouldStream={true} />
             </div>
 
-            {/* Strategic Note */}
-            <div className="bg-white/[0.02] border border-white/[0.05] p-8 w-full max-w-[550px] rounded-3xl backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-2 h-2 rounded-full bg-[#1FB8CD] shadow-[0_0_10px_#1FB8CD]"></div>
-                <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Note d'intention stratégique</h3>
+            {/* Strategic Note - Premium Quote Style */}
+            <div className="w-full max-w-[550px] space-y-6">
+              <div className="flex items-center gap-3 text-slate-500">
+                <div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center text-[#1FB8CD]">
+                  <BespokeIcons.Sparkles className="w-4 h-4" />
+                </div>
+                <h3 className="text-[11px] font-black text-white/50 uppercase tracking-[0.2em]">Note d'intention stratégique</h3>
               </div>
-              <p className="text-base text-slate-400 leading-relaxed italic font-medium">
-                "{note}"
-              </p>
+              <div className="bg-white/[0.01] border border-white/[0.04] rounded-[2.5rem] p-12 text-[20px] text-slate-400 leading-relaxed italic font-serif relative group backdrop-blur-sm shadow-2xl shadow-black/20">
+                <span className="absolute top-6 left-8 text-6xl text-white/[0.03] font-serif select-none">“</span>
+                <span className="relative z-10 block">
+                  {note}
+                </span>
+                <span className="absolute bottom-4 right-8 text-6xl text-white/[0.03] font-serif select-none">”</span>
+              </div>
             </div>
           </motion.div>
         ) : (

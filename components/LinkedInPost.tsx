@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThumbsUp, MessageSquare, Repeat2, Send, Globe2, MoreHorizontal, Check, Copy } from 'lucide-react';
 import Image from 'next/image';
+import Typewriter from './Typewriter';
 
 interface LinkedInPostProps {
   content: string;
-  isTyping?: boolean;
+  shouldStream?: boolean;
 }
 
-export default function LinkedInPost({ content, isTyping }: LinkedInPostProps) {
+export default function LinkedInPost({ content, shouldStream = false }: LinkedInPostProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -49,8 +50,12 @@ export default function LinkedInPost({ content, isTyping }: LinkedInPostProps) {
         {/* Content */}
         <div className="px-4 pb-4">
           <div className="text-[14px] text-slate-300 leading-relaxed whitespace-pre-wrap min-h-[60px]">
-            {content}
-            {isTyping && (
+            {shouldStream ? (
+              <Typewriter text={content} speed={8} />
+            ) : (
+              content
+            )}
+            {shouldStream && (
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
