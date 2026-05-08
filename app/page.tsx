@@ -64,7 +64,7 @@ export default function Home() {
             <div className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
               <Image 
                 src="/logo.svg" 
-                alt="Impalia" 
+                alt="Forge Studio" 
                 fill 
                 className="object-contain"
               />
@@ -91,7 +91,7 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-12">
             <div className="space-y-2">
               <h1 className="text-3xl font-medium tracking-tight text-white">Composition</h1>
-              <p className="text-slate-400 text-[15px]">Configurez les paramètres de votre publication</p>
+              <p className="text-slate-400 text-sm">Créez des publications impactantes avec l'IA de Forge Studio</p>
             </div>
 
             <div className="search-container p-8">
@@ -139,7 +139,7 @@ export default function Home() {
       {/* Minimal Footer */}
       <footer className="py-2 px-6 border-t border-white/5 text-[9px] text-slate-600 flex justify-between items-center bg-[#191A1A]">
         <div className="flex items-center gap-4">
-          <span>&copy; 2026 Impalia Forge Studio</span>
+          <span>&copy; 2026 Forge Studio</span>
         </div>
         <div className="flex gap-4 uppercase tracking-tighter">
           <span>v2.4.0</span>

@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Impalia Forge | LinkedIn Content Generator',
-  description: 'Générez des posts LinkedIn impactants avec l\'IA stratégique d\'Impalia.',
+  title: 'Forge Studio | LinkedIn Content Generator',
+  description: 'Générez des posts LinkedIn impactants avec l\'IA stratégique de Forge Studio.',
   icons: {
     icon: '/logo.svg',
   },
