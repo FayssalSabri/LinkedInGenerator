@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildUserPrompt, buildSystemPrompt } from '../lib/prompt';
+import { type GenerationParams } from '../lib/schemas';
 
 describe('buildSystemPrompt', () => {
   it('contient les règles de rédaction essentielles', () => {
@@ -29,7 +30,7 @@ describe('buildSystemPrompt', () => {
 });
 
 describe('buildUserPrompt', () => {
-  const params = {
+  const params: GenerationParams = {
     description: 'Entreprise de conseil en transformation digitale.',
     brief: 'Annonce de recrutement d\'un développeur senior.',
     tone: 'Professionnel'
@@ -63,7 +64,7 @@ describe('buildUserPrompt', () => {
   });
 
   it('fonctionne avec tous les tons', () => {
-    const tones = ['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'];
+    const tones: GenerationParams['tone'][] = ['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'];
     for (const tone of tones) {
       const prompt = buildUserPrompt({ ...params, tone });
       expect(prompt).toContain(tone);
