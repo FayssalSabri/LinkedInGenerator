@@ -6,6 +6,7 @@ import { generationSchema, type GenerationParams } from '@/lib/schemas';
 import { BespokeIcons } from '@/components/BespokeIcons';
 import { ArrowUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useCallback } from 'react';
 
 interface FormProps {
   onSubmit: (data: GenerationParams) => void;
@@ -14,11 +15,11 @@ interface FormProps {
 
 const tones = [
   { id: "Professionnel", label: "Pro", icon: <BespokeIcons.Pro className="w-4 h-4" /> },
-  { id: "Chaleureux", label: "Warm", icon: <BespokeIcons.Warm className="w-4 h-4" /> },
+  { id: "Chaleureux", label: "Chaleureux", icon: <BespokeIcons.Warm className="w-4 h-4" /> },
   { id: "Expert", label: "Expert", icon: <BespokeIcons.Expert className="w-4 h-4" /> },
-  { id: "Dynamique", label: "Fast", icon: <BespokeIcons.Dynamic className="w-4 h-4" /> },
-  { id: "Créatif", label: "Creative", icon: <BespokeIcons.Creative className="w-4 h-4" /> },
-];
+  { id: "Dynamique", label: "Dynamique", icon: <BespokeIcons.Dynamic className="w-4 h-4" /> },
+  { id: "Créatif", label: "Créatif", icon: <BespokeIcons.Creative className="w-4 h-4" /> },
+] as const;
 
 export default function Form({ onSubmit, isLoading }: FormProps) {
   const {
@@ -37,37 +38,62 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
   });
 
   const tone = watch('tone');
-  const descriptionLength = watch('description').length;
-  const briefLength = watch('brief').length;
+  const descriptionLength = watch('description')?.length ?? 0;
+  const briefLength = watch('brief')?.length ?? 0;
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isLoading) {
+      e.preventDefault();
+      handleSubmit(onSubmit)();
+    }
+  }, [handleSubmit, onSubmit, isLoading]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      onKeyDown={handleKeyDown}
+      className="space-y-8 lg:space-y-10"
+      aria-label="Formulaire de génération LinkedIn"
+    >
       {/* Description Field */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Identité & Contexte</label>
-          <span className={`text-[10px] font-bold tabular-nums ${descriptionLength > 2000 ? 'text-red-400' : 'text-slate-600'}`}>
-            {descriptionLength} / 2,000
+          <label htmlFor="description" className="field-label">
+            Identité &amp; Contexte
+          </label>
+          <span className={`char-counter ${descriptionLength > 2000 ? 'char-counter-danger' : ''}`}>
+            {descriptionLength} / 2 000
           </span>
         </div>
         <textarea
+          id="description"
           {...register('description')}
-          className="w-full bg-white/[0.02] border border-white/[0.05] rounded-2xl px-6 py-5 text-[16px] text-white/90 placeholder:text-slate-700 focus:border-[#1FB8CD]/40 focus:bg-white/[0.04] outline-none transition-all resize-none min-h-[120px] leading-relaxed font-medium"
+          className="input-field min-h-[100px] lg:min-h-[120px]"
           placeholder="Décrivez votre entreprise, son secteur, ses valeurs..."
+          aria-describedby={errors.description ? 'desc-error' : undefined}
+          aria-invalid={!!errors.description}
+          disabled={isLoading}
         />
-        {errors.description && <p className="text-xs text-red-400/80 px-1 font-medium">{errors.description.message}</p>}
+        {errors.description && (
+          <p id="desc-error" className="text-xs text-red-400/80 px-1 font-medium" role="alert">
+            {errors.description.message}
+          </p>
+        )}
       </div>
 
       {/* Brief Field */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex justify-between items-center px-1">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Brief de Publication</label>
-          <span className={`text-[10px] font-bold tabular-nums ${briefLength > 500 ? 'text-red-400' : 'text-slate-600'}`}>
+          <label htmlFor="brief" className="field-label">
+            Brief de Publication
+          </label>
+          <span className={`char-counter ${briefLength > 500 ? 'char-counter-danger' : ''}`}>
             {briefLength} / 500
           </span>
         </div>
-        <div className="relative bg-white/[0.02] border border-white/[0.05] rounded-2xl px-6 py-5 focus-within:border-[#1FB8CD]/40 focus-within:bg-white/[0.04] transition-all">
+        <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl px-5 py-4 sm:px-6 sm:py-5 focus-within:border-[var(--color-border-hover)] focus-within:bg-[var(--color-surface-hover)] transition-all">
           <textarea
+            id="brief"
             {...register('brief')}
             rows={1}
             onInput={(e) => {
@@ -75,51 +101,65 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
               target.style.height = 'auto';
               target.style.height = `${target.scrollHeight}px`;
             }}
-            className="w-full bg-transparent border-none text-[18px] text-white placeholder:text-slate-700 focus:ring-0 p-0 resize-none min-h-[50px] leading-relaxed font-semibold"
-            placeholder='Quel est l’enjeu de ce post ?'
+            className="w-full bg-transparent border-none text-base sm:text-lg text-white placeholder:text-slate-700 focus:ring-0 p-0 resize-none min-h-[50px] leading-relaxed font-semibold outline-none"
+            placeholder="Quel est l'enjeu de ce post ?"
+            aria-describedby={errors.brief ? 'brief-error' : undefined}
+            aria-invalid={!!errors.brief}
+            disabled={isLoading}
           />
         </div>
-        {errors.brief && <p className="text-xs text-red-400/80 px-1 font-medium">{errors.brief.message}</p>}
+        {errors.brief && (
+          <p id="brief-error" className="text-xs text-red-400/80 px-1 font-medium" role="alert">
+            {errors.brief.message}
+          </p>
+        )}
       </div>
 
-      {/* Tone & Submit Button - Cleaner Layout */}
-      <div className="pt-6 border-t border-white/[0.03]">
-        <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1 mb-6 block">Tonalité souhaitée</label>
-        
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto custom-scrollbar pb-2 flex-1">
+      <div className="pt-6 lg:pt-8 border-t border-[var(--color-border)]">
+        <label className="field-label px-1 mb-6 block" id="tone-label">
+          Tonalité souhaitée
+        </label>
+
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
+          <div
+            className="flex flex-nowrap items-center gap-1.5 flex-1 overflow-x-auto no-scrollbar"
+            role="radiogroup"
+            aria-labelledby="tone-label"
+          >
             {tones.map((t) => (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setValue('tone', t.id as any)}
-                className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all duration-300 border ${
-                  tone === t.id 
-                    ? 'bg-[#1FB8CD] text-white border-transparent shadow-[0_0_15px_rgba(31,184,205,0.2)]' 
-                    : 'text-slate-500 border-white/[0.05] hover:bg-white/5 hover:text-slate-300'
-                }`}
+                role="radio"
+                aria-checked={tone === t.id}
+                onClick={() => setValue('tone', t.id as GenerationParams['tone'])}
+                disabled={isLoading}
+                className={`tone-chip px-2.5 py-1.5 ${tone === t.id ? 'tone-chip-active' : 'tone-chip-inactive'}`}
               >
                 {t.icon}
-                <span className="uppercase tracking-wider">{t.label}</span>
+                <span className="uppercase tracking-wider whitespace-nowrap">{t.label}</span>
               </button>
             ))}
           </div>
 
-          <button
+          <motion.button
             type="submit"
             disabled={isLoading}
-            className={`flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-2xl transition-all duration-500 ${
-              isLoading 
-                ? 'bg-slate-800 text-slate-600' 
-                : 'bg-[#1FB8CD] text-white hover:bg-[#1DA8BA] shadow-[0_10px_30px_rgba(31,184,205,0.15)] hover:scale-105 active:scale-95'
+            whileTap={isLoading ? {} : { scale: 0.92 }}
+            className={`flex-shrink-0 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl transition-all duration-500 ${
+              isLoading
+                ? 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                : 'bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] shadow-[0_10px_30px_var(--color-accent-glow)] hover:scale-105'
             }`}
+            aria-label={isLoading ? 'Génération en cours' : 'Générer la publication (⌘ + Entrée)'}
+            title="⌘ + Entrée"
           >
             {isLoading ? (
-              <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <ArrowUp className="w-6 h-6" strokeWidth={3} />
+              <ArrowUp className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={3} />
             )}
-          </button>
+          </motion.button>
         </div>
       </div>
     </form>

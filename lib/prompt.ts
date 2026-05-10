@@ -1,9 +1,9 @@
-export interface GenerationParams {
-  description: string;
-  brief: string;
-  tone: string;
-}
+import { type GenerationParams } from './schemas';
 
+/**
+ * Builds the system prompt that instructs the LLM on format, style, and constraints.
+ * Uses Chain-of-Thought and few-shot prompting for reliable JSON output.
+ */
 export function buildSystemPrompt(): string {
   return `Tu es un expert senior en communication LinkedIn, spécialisé dans l'accompagnement des PME françaises.
 Ton objectif est de rédiger des publications percutantes qui respectent l'identité de marque et engagent l'audience.
@@ -26,11 +26,15 @@ FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
 
 EXEMPLE DE QUALITÉ (Ton: Expert) :
 {
-  "publication": "🚀 Le saviez-vous ? 80% des PME ignorent leur potentiel thermique.\n\nChez EcoLogis, nous avons vu des factures fondre de 30% grâce à une isolation biosourcée. Pas de magie, juste de l'expertise.\n\nNos clients à Lyon redécouvrent le confort d'été.\n\n👇 Et vous, quelle est votre priorité pour 2024 ?",
+  "publication": "🚀 Le saviez-vous ? 80% des PME ignorent leur potentiel thermique.\\n\\nChez EcoLogis, nous avons vu des factures fondre de 30% grâce à une isolation biosourcée. Pas de magie, juste de l'expertise.\\n\\nNos clients à Lyon redécouvrent le confort d'été.\\n\\n👇 Et vous, quelle est votre priorité pour 2024 ?",
   "note": "J'ai choisi une accroche de type 'chiffre choc' pour capter l'attention. Le ton est expert mais accessible, en mentionnant des résultats concrets pour asseoir la crédibilité."
 }`;
 }
 
+/**
+ * Builds the user prompt by injecting the generation parameters.
+ * @param params - Validated generation parameters (description, brief, tone)
+ */
 export function buildUserPrompt(params: GenerationParams): string {
   const { description, brief, tone } = params;
   return `Voici les informations pour la génération :

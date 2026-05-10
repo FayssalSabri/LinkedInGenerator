@@ -5,38 +5,63 @@
 @layer base {
   :root {
     --font-sans: var(--font-inter), ui-sans-serif, system-ui;
-    --perplexity-bg: #191A1A;
-    --perplexity-card: #202222;
-    --perplexity-accent: #1FB8CD;
+    --color-bg: #0F1117;
+    --color-card: #1A1D27;
+    --color-accent: #E8445A;
+    --color-accent-hover: #D63D50;
+    --color-accent-glow: rgba(232, 68, 90, 0.15);
+    --color-accent-subtle: rgba(232, 68, 90, 0.1);
+    --color-text: #F5F5F5;
+    --color-text-muted: #6B7280;
+    --color-text-dim: #4B5563;
+    --color-border: #2D3141;
+    --color-border-hover: rgba(232, 68, 90, 0.4);
+    --color-surface: rgba(255, 255, 255, 0.02);
+    --color-surface-hover: rgba(255, 255, 255, 0.04);
+    --color-danger: #EF4444;
+    --color-success: #10B981;
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
   }
 
   body {
-    @apply antialiased text-[#E8E8E8] bg-[#191A1A] font-sans selection:bg-[#1FB8CD]/30 selection:text-white;
+    @apply antialiased font-sans;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+  }
+
+  ::selection {
+    background-color: rgba(232, 68, 90, 0.3);
+    color: white;
   }
 }
 
 @layer components {
-  /* Perplexity-style Input Container */
+  /* Card styles */
   .search-container {
-    @apply bg-[#202222] border border-white/10 rounded-2xl shadow-xl transition-all duration-300 focus-within:border-[#1FB8CD]/50;
+    @apply bg-[var(--color-card)] border border-white/10 rounded-2xl shadow-xl transition-all duration-300 focus-within:border-[var(--color-accent)]/50;
   }
 
   .pro-card {
-    @apply bg-[#202222] border border-white/5 rounded-2xl transition-all duration-300;
+    @apply bg-[var(--color-card)] border border-white/5 rounded-2xl transition-all duration-300;
   }
 
+  /* Buttons */
   .btn-primary {
-    @apply flex items-center justify-center gap-2 px-6 py-2.5 rounded-full 
-           bg-[#1FB8CD] text-white text-sm font-semibold 
-           transition-all duration-200 hover:bg-[#1DA8BA] active:scale-95 disabled:opacity-50;
+    @apply flex items-center justify-center gap-2 px-6 py-2.5 rounded-full
+           bg-[var(--color-accent)] text-white text-sm font-semibold
+           transition-all duration-200 hover:bg-[var(--color-accent-hover)] active:scale-95 disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply flex items-center justify-center gap-2 px-4 py-2 rounded-full 
-           bg-white/5 border border-white/10 text-white text-sm font-medium 
+    @apply flex items-center justify-center gap-2 px-4 py-2 rounded-full
+           bg-white/5 border border-white/10 text-white text-sm font-medium
            transition-all duration-200 hover:bg-white/10;
   }
 
+  /* Navigation */
   .nav-item {
     @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200;
   }
@@ -49,6 +74,7 @@
     @apply text-slate-400 hover:text-white hover:bg-white/5;
   }
 
+  /* Skeleton loader */
   .skeleton-shimmer {
     @apply relative overflow-hidden bg-white/5 rounded-lg;
   }
@@ -58,14 +84,60 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
     animation: shimmer-effect 2s infinite;
   }
+
+  /* Form inputs */
+  .input-field {
+    @apply w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl
+           px-5 py-4 sm:px-6 sm:py-5 text-base text-white/90 placeholder:text-slate-700
+           focus:border-[var(--color-border-hover)] focus:bg-[var(--color-surface-hover)]
+           outline-none transition-all resize-none leading-relaxed font-medium;
+  }
+
+  /* Label style */
+  .field-label {
+    @apply text-[10px] font-black text-slate-500 uppercase tracking-[0.2em];
+  }
+
+  /* Character counter */
+  .char-counter {
+    @apply text-[10px] font-bold tabular-nums text-slate-600;
+  }
+
+  .char-counter-danger {
+    @apply text-red-400;
+  }
+
+  /* Tone chip */
+  .tone-chip {
+    @apply flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold
+           transition-all duration-300 border;
+  }
+
+  .tone-chip-active {
+    @apply bg-[var(--color-accent)] text-white border-transparent shadow-[0_0_15px_var(--color-accent-glow)];
+  }
+
+  .tone-chip-inactive {
+    @apply text-slate-500 border-[var(--color-border)] hover:bg-white/5 hover:text-slate-300;
+  }
 }
 
+/* Animations */
 @keyframes shimmer-effect {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
 
-/* Global Dark Scrollbar Styles */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+/* Global scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -93,11 +165,11 @@
   scrollbar-gutter: stable;
 }
 
-.animate-spin-slow {
-  animation: spin 8s linear infinite;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
