@@ -1,48 +1,69 @@
-# LinkedIn Content Studio
+# LinkedIn Content Studio — Forge Studio
 
-Ce projet est une solution web professionnelle permettant de générer des publications LinkedIn optimisées pour les entreprises, en s'appuyant sur l'intelligence artificielle.
+Solution web de haute précision pour la génération de contenus LinkedIn stratégiques. Ce projet combine une interface utilisateur minimaliste avec une ingénierie de prompt avancée pour transformer des briefs d'entreprise en publications professionnelles prêtes à l'emploi.
 
-## Philosophie du Projet
+## Aperçu du Studio
 
-Ce service privilégie la qualité d'exécution et la robustesse technique. L'interface est conçue comme un studio de création minimaliste, ergonomique et performant.
+![Interface du Studio](Screenshoots/Studio_page.png)
 
-- Design Studio : Interface sombre et épurée, optimisée pour la concentration et le confort visuel.
-- Architecture Sécurisée : Route API backend protégeant les clés d'API et gérant les requêtes de manière centralisée.
-- Validation Stricte : Utilisation de schémas de données rigoureux pour garantir le respect des contraintes de formatage et de longueur.
-- Ingénierie de Prompt : Système de génération orchestré pour produire des contenus structurés incluant une note d'intention stratégique.
+![Résultat de la génération](Screenshoots/studio_page_apres_generation.png)
 
-## Stack Technique
+![Historique des publications](Screenshoots/History_page.png)
 
-- Framework : Next.js 14 (App Router)
-- Langage : TypeScript
-- Style : Tailwind CSS
-- Animations : Framer Motion
-- Validation : Zod & React Hook Form
-- Intelligence Artificielle : API Groq (Modèle Llama 3)
+## Principes Directeurs
 
-## Lancement Local
+- Ergonomie Zen : Une interface sombre (Dark Mode) conçue pour minimiser les distractions et maximiser la productivité éditoriale.
+- Intégrité des Données : Validation stricte via Zod garantissant que chaque sortie respecte les limites techniques de LinkedIn (1 300 caractères).
+- Transparence Algorithmique : Chaque génération est accompagnée d'une note d'intention expliquant les choix de tonalité, de structure et d'angle d'attaque.
+- Sécurité Native : Architecture isolant les clés API côté serveur pour prévenir toute exposition.
 
-1. Installation des dépendances
+## Architecture Technique
+
+- Coeur Logiciel : Next.js 14 (App Router)
+- Typage : TypeScript (Strict Mode)
+- Design System : Vanilla CSS & Tailwind CSS
+- Dynamisme : Framer Motion
+- Moteur IA : Groq / Llama 3 (Inférence ultra-rapide)
+- Reporting : ReportLab (Moteur de rendu PDF professionnel)
+
+## Guide de Démarrage
+
+### Studio de Génération (Web)
+
+1. Installation
    ```bash
    npm install
    ```
 
-2. Configuration Environnement
-   Créez un fichier .env.local à la racine du projet et ajoutez votre clé :
+2. Configuration
+   Créez un fichier .env.local :
    ```env
    GROQ_API_KEY=votre_cle_api_groq
    ```
 
-3. Lancement du serveur
+3. Exécution
    ```bash
    npm run dev
    ```
-   L'application sera disponible sur http://localhost:3000.
 
-## Limites Identifiées
+### Générateur de Restitution (PDF)
 
-Voici une analyse des limites techniques actuelles du système :
+Pour produire le document technique de restitution :
 
-1. Mise en cache volatile : Le système utilise une gestion de cache en mémoire vive. Dans un environnement serverless, ce cache est réinitialisé lors des redémarrages d'instances.
-2. Persistance locale : La gestion de l'historique repose sur le stockage local du navigateur. Les données ne sont pas partagées entre différents appareils.
-3. Absence de contexte long : Le système actuel génère des publications à partir d'un brief ponctuel et ne possède pas de mémoire à long terme de l'identité de marque globale au-delà des paramètres saisis.
+1. Environnement
+   ```bash
+   conda create -n pdf-gen python=3.10
+   conda activate pdf-gen
+   pip install reportlab
+   ```
+
+2. Génération
+   ```bash
+   python generate_restitution.py
+   ```
+
+## Roadmap & Évolutions
+
+1. Persistance Distante : Migration vers PostgreSQL/Supabase pour synchroniser l'historique multi-appareils.
+2. Publication Directe : Intégration de l'OAuth LinkedIn pour poster sans quitter le studio.
+3. Intelligence Augmentée : Mise en œuvre d'un système RAG (Retrieval-Augmented Generation) pour apprendre le style spécifique de l'utilisateur sur la base de ses publications passées.
