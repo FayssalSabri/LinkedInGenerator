@@ -1,6 +1,6 @@
 # Forge Studio — LinkedIn Content Generator
 
-🔗 **[Accéder à l'application en ligne](https://linked-in-generator-seven.vercel.app/)** | 📄 **[Consulter le rapport de restitution (PDF)](./Restitution/restitution_linkedin_studio_VF.pdf)**
+🔗 **[Accéder à l'application en ligne](https://linked-in-generator-seven.vercel.app/)** | 📄 **[Consulter le rapport de restitution (PDF)](./Restitution/restitution_linkedin_studio.pdf)**
 
 Forge Studio est une application web de pointe dédiée à la génération stratégique de contenus pour LinkedIn. Conçu avec une interface épurée et propulsé par une ingénierie de prompt avancée, cet outil transforme vos idées en publications professionnelles percutantes et prêtes à être partagées.
 
