@@ -87,7 +87,7 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
           </Tabs.Trigger>
         </Tabs.List>
 
-        <Tabs.Content value="generate" className="space-y-5 lg:space-y-6 focus:outline-none flex-1 flex flex-col">
+        <Tabs.Content value="generate" className="space-y-5 lg:space-y-6 focus:outline-none flex-1 flex flex-col data-[state=inactive]:hidden">
           {/* Description Field */}
           <div className="space-y-2">
             <div className="flex justify-between items-center px-1">
@@ -170,7 +170,7 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
           </div>
         </Tabs.Content>
 
-        <Tabs.Content value="roast" className="space-y-5 lg:space-y-6 focus:outline-none flex-1 flex flex-col">
+        <Tabs.Content value="roast" className="space-y-5 lg:space-y-6 focus:outline-none flex-1 flex flex-col data-[state=inactive]:hidden">
           {/* Draft Field */}
           <div className="space-y-2 flex-1 flex flex-col">
             <div className="flex justify-between items-center px-1">
