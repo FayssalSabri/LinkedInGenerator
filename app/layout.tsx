@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: 'Forge Studio | Générateur de Contenus LinkedIn',
   description: 'Générez des publications LinkedIn percutantes avec l\'IA stratégique de Forge Studio. Posts optimisés, note d\'intention, copie en un clic.',
   icons: {
-    icon: '/logo.svg',
+    icon: '/logo.png',
   },
   openGraph: {
     title: 'Forge Studio — LinkedIn Content Generator',

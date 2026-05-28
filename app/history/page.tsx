@@ -50,7 +50,7 @@ export default function HistoryPage() {
                 placeholder="Rechercher dans les archives…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 py-3 bg-[var(--color-surface)] border-b border-slate-200 dark:border-white/10 text-[14px] text-slate-900 dark:text-white focus:border-[var(--color-accent)]/60 outline-none transition-all placeholder:text-slate-500 font-medium"
+                className="w-full pl-8 py-3 bg-[var(--color-surface)] border-b border-slate-200 dark:border-white/10 text-[14px] text-slate-900 dark:text-white focus:border-[var(--color-accent)]/60 outline-none transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 font-medium"
                 aria-label="Rechercher dans l'historique"
               />
             </div>
@@ -71,7 +71,7 @@ export default function HistoryPage() {
                     className={`w-full text-left px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 group relative ${
                       selected?.id === item.id
                         ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-900 dark:text-white'
-                        : 'text-slate-500 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
                     }`}
                     aria-pressed={selected?.id === item.id}
                   >
@@ -83,7 +83,7 @@ export default function HistoryPage() {
                     )}
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
-                        selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-700'
+                        selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-500 dark:text-slate-400'
                       }`}>
                         {item.params.mode === 'roast' ? 'ROAST' : item.params.tone}
                       </span>
@@ -92,7 +92,7 @@ export default function HistoryPage() {
                       </span>
                     </div>
                     <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${
-                      selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500'
+                      selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-300'
                     }`}>
                       {item.params.brief || item.params.draft}
                     </h4>
@@ -106,7 +106,7 @@ export default function HistoryPage() {
             <div className="p-4 sm:p-8 pb-6 lg:pb-12">
               <button
                 onClick={handleClearHistory}
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-red-400/30 hover:text-red-400 transition-all"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all"
               >
                 Tout effacer
               </button>
@@ -137,7 +137,7 @@ export default function HistoryPage() {
                       <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.2] line-clamp-2">
                         {selected.params.brief || 'Roast de draft'}
                       </h2>
-                      <div className="flex items-center gap-4 lg:gap-6 text-slate-500 text-[11px] font-black uppercase tracking-[0.15em]">
+                      <div className="flex items-center gap-4 lg:gap-6 text-slate-500 dark:text-slate-400 text-[11px] font-black uppercase tracking-[0.15em]">
                         <div className="flex items-center gap-2 text-[var(--color-accent)]">
                           <div className="w-4 h-4 bg-[var(--color-accent)]/10 rounded flex items-center justify-center">
                             <div className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full"></div>
@@ -169,7 +169,7 @@ export default function HistoryPage() {
                     <div className="flex-1 flex flex-col gap-8 w-full">
                       {selected.note && (
                         <div className="space-y-4">
-                          <div className="flex items-center gap-3 text-slate-500">
+                          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                             <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
                               <BespokeIcons.Sparkles className="w-4 h-4" />
                             </div>
@@ -177,7 +177,7 @@ export default function HistoryPage() {
                               Note Stratégique
                             </h4>
                           </div>
-                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] p-6 lg:p-8 text-sm lg:text-base text-slate-700 dark:text-slate-400 leading-relaxed italic font-serif relative group">
+                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] p-6 lg:p-8 text-sm lg:text-base text-slate-700 dark:text-slate-300 leading-relaxed italic font-serif relative group">
                             <span className="absolute top-3 left-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&ldquo;</span>
                             <span className="relative z-10 block">
                               {selected.note}

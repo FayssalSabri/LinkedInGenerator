@@ -19,15 +19,15 @@ export default function Navbar() {
       role="navigation"
       aria-label="Navigation principale"
     >
-      <Link href="/" className="flex items-center gap-3 group" aria-label="Accueil Forge Studio">
-        <div className="relative w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
+      <Link href="/" className="flex items-center gap-4 group" aria-label="Accueil Forge Studio">
+        <div className="relative w-14 h-14 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all">
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Forge Studio"
-            className="w-full h-full object-contain p-1.5"
+            className="w-full h-full object-cover scale-150"
           />
         </div>
-        <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white/90 hidden sm:inline">
+        <span className="font-semibold text-xl tracking-tight text-slate-900 dark:text-white/90 hidden sm:inline">
           Forge Studio
         </span>
       </Link>

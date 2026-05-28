@@ -101,22 +101,21 @@
     animation: shimmer-effect 2s infinite;
   }
 
-  /* Form inputs */
   .input-field {
     @apply w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl
-           px-5 py-4 sm:px-6 sm:py-5 text-base text-slate-900 dark:text-white/90 placeholder:text-slate-400 dark:placeholder:text-slate-700
+           px-5 py-4 sm:px-6 sm:py-5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400
            focus:border-[var(--color-border-hover)] focus:bg-[var(--color-surface-hover)]
            outline-none transition-all resize-none leading-relaxed font-medium;
   }
 
   /* Label style */
   .field-label {
-    @apply text-[10px] font-black text-slate-500 uppercase tracking-[0.2em];
+    @apply text-[10px] font-black text-slate-500 dark:text-slate-300 uppercase tracking-[0.2em];
   }
 
   /* Character counter */
   .char-counter {
-    @apply text-[10px] font-bold tabular-nums text-slate-600;
+    @apply text-[10px] font-bold tabular-nums text-slate-600 dark:text-slate-400;
   }
 
   .char-counter-danger {

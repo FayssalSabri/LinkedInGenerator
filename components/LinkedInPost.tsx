@@ -33,10 +33,10 @@ export default function LinkedInPost({ content, shouldStream = false }: LinkedIn
             <div className="flex flex-col">
               <h4 className="text-[13px] font-semibold text-slate-900 dark:text-white leading-tight">Sarah Martin</h4>
               <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-                <p className="text-[11px] text-slate-500">Consultante en Stratégie Digitale &amp; IA</p>
-                <span className="text-[11px] text-slate-600">•</span>
-                <span className="text-[11px] text-slate-600">Maintenant</span>
-                <Globe2 className="w-2.5 h-2.5 text-slate-600 ml-0.5" />
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Consultante en Stratégie Digitale &amp; IA</p>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">•</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">Maintenant</span>
+                <Globe2 className="w-2.5 h-2.5 text-slate-500 dark:text-slate-400 ml-0.5" />
               </div>
             </div>
           </div>
