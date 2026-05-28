@@ -53,8 +53,8 @@ export async function POST(req: Request) {
     }
 
     // ── Cache Check ──────────────────────────────────────────
-    const { description, brief, tone } = validation.data;
-    const cacheKey = JSON.stringify({ description, brief, tone });
+    const { mode, description, brief, tone, draft } = validation.data;
+    const cacheKey = JSON.stringify({ mode, description, brief, tone, draft });
     const cachedResponse = getCachedResponse(cacheKey);
     if (cachedResponse) {
       return NextResponse.json({ ...cachedResponse, _cached: true });
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     // ── Groq API Call ────────────────────────────────────────
     const start = Date.now();
-    console.log(`[API] Génération lancée — Ton: ${tone}`);
+    console.log(`[API] Génération lancée — Mode: ${mode}`);
 
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -73,8 +73,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          { role: 'user', content: buildUserPrompt({ description, brief, tone }) }
+          { role: 'system', content: buildSystemPrompt(mode as 'generate' | 'roast') },
+          { role: 'user', content: buildUserPrompt(validation.data as any) }
         ],
         temperature: 0.7,
         response_format: { type: "json_object" }

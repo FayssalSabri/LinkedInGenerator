@@ -7,12 +7,15 @@ export interface HistoryItem {
   id: string;
   timestamp: number;
   params: {
-    description: string;
-    brief: string;
-    tone: string;
+    mode?: string;
+    description?: string;
+    brief?: string;
+    tone?: string;
+    draft?: string;
   };
   publication: string;
   note: string;
+  imagePrompt?: string;
 }
 
 const STORAGE_KEY = 'linkedin_history';

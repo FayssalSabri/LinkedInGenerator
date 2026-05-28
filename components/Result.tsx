@@ -8,10 +8,11 @@ import { BespokeIcons } from './BespokeIcons';
 interface ResultProps {
   publication?: string;
   note?: string;
+  imagePrompt?: string;
   isLoading: boolean;
 }
 
-export default function Result({ publication, note, isLoading }: ResultProps) {
+export default function Result({ publication, note, imagePrompt, isLoading }: ResultProps) {
   return (
     <div className="w-full flex-1 flex flex-col relative z-10 h-full">
       <AnimatePresence mode="wait">
@@ -75,16 +76,36 @@ export default function Result({ publication, note, isLoading }: ResultProps) {
                   <div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
                     <BespokeIcons.Sparkles className="w-4 h-4" />
                   </div>
-                  <h3 className="text-[11px] font-black text-white/50 uppercase tracking-[0.2em]">
+                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
                     Note d&apos;intention stratégique
                   </h3>
                 </div>
-                <div className="bg-white/[0.01] border border-white/[0.04] rounded-[1.5rem] sm:rounded-[2.5rem] p-8 sm:p-12 text-base sm:text-xl text-slate-400 leading-relaxed italic font-serif relative group backdrop-blur-sm shadow-2xl shadow-black/20">
-                  <span className="absolute top-4 sm:top-6 left-6 sm:left-8 text-4xl sm:text-6xl text-white/[0.03] font-serif select-none">&ldquo;</span>
+                <div className="bg-white/[0.01] dark:bg-white/[0.01] bg-slate-50 border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] sm:rounded-[2.5rem] p-8 sm:p-12 text-base sm:text-xl text-slate-700 dark:text-slate-400 leading-relaxed italic font-serif relative group backdrop-blur-sm shadow-xl dark:shadow-2xl dark:shadow-black/20">
+                  <span className="absolute top-4 sm:top-6 left-6 sm:left-8 text-4xl sm:text-6xl text-slate-300 dark:text-white/[0.03] font-serif select-none">&ldquo;</span>
                   <span className="relative z-10 block">
                     {note}
                   </span>
-                  <span className="absolute bottom-2 sm:bottom-4 right-6 sm:right-8 text-4xl sm:text-6xl text-white/[0.03] font-serif select-none">&rdquo;</span>
+                  <span className="absolute bottom-2 sm:bottom-4 right-6 sm:right-8 text-4xl sm:text-6xl text-slate-300 dark:text-white/[0.03] font-serif select-none">&rdquo;</span>
+                </div>
+              </div>
+            )}
+
+            {/* Image Prompt */}
+            {imagePrompt && (
+              <div className="w-full max-w-[550px] space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-slate-500">
+                    <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                    <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                      Suggestion d&apos;image (Midjourney/DALL-E)
+                    </h3>
+                  </div>
+                  <CopyButton text={imagePrompt} />
+                </div>
+                <div className="bg-slate-100 dark:bg-black/30 border border-slate-200 dark:border-white/5 rounded-xl p-4 sm:p-5 font-mono text-sm text-slate-600 dark:text-slate-400">
+                  {imagePrompt}
                 </div>
               </div>
             )}

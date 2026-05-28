@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PenSquare, History } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 /**
  * Shared navigation bar component.
@@ -26,12 +27,12 @@ export default function Navbar() {
             className="w-full h-full object-contain p-1.5"
           />
         </div>
-        <span className="font-semibold text-sm tracking-tight text-white/90 hidden sm:inline">
+        <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white/90 hidden sm:inline">
           Forge Studio
         </span>
       </Link>
 
-      <div className="flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
+      <div className="flex items-center gap-1 bg-black/5 dark:bg-white/[0.03] p-1 rounded-xl border border-black/5 dark:border-white/[0.05]">
         <Link
           href="/"
           className={`nav-item !px-4 sm:!px-5 !py-1.5 !rounded-lg text-xs ${
@@ -52,6 +53,9 @@ export default function Navbar() {
           <History className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Bibliothèque</span>
         </Link>
+        <div className="ml-2 pl-2 border-l border-black/10 dark:border-white/[0.05]">
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );

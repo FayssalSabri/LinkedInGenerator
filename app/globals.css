@@ -5,6 +5,28 @@
 @layer base {
   :root {
     --font-sans: var(--font-inter), ui-sans-serif, system-ui;
+    --color-bg: #FFFFFF;
+    --color-card: #F8FAFC;
+    --color-accent: #E8445A;
+    --color-accent-hover: #D63D50;
+    --color-accent-glow: rgba(232, 68, 90, 0.15);
+    --color-accent-subtle: rgba(232, 68, 90, 0.05);
+    --color-text: #0F1117;
+    --color-text-muted: #4B5563;
+    --color-text-dim: #6B7280;
+    --color-border: #E2E8F0;
+    --color-border-hover: rgba(232, 68, 90, 0.4);
+    --color-surface: rgba(0, 0, 0, 0.02);
+    --color-surface-hover: rgba(0, 0, 0, 0.04);
+    --color-danger: #EF4444;
+    --color-success: #10B981;
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+  }
+
+  .dark {
     --color-bg: #0F1117;
     --color-card: #1A1D27;
     --color-accent: #E8445A;
@@ -18,12 +40,6 @@
     --color-border-hover: rgba(232, 68, 90, 0.4);
     --color-surface: rgba(255, 255, 255, 0.02);
     --color-surface-hover: rgba(255, 255, 255, 0.04);
-    --color-danger: #EF4444;
-    --color-success: #10B981;
-    --radius-sm: 0.75rem;
-    --radius-md: 1rem;
-    --radius-lg: 1.5rem;
-    --radius-xl: 2rem;
   }
 
   body {
@@ -34,7 +50,7 @@
 
   ::selection {
     background-color: rgba(232, 68, 90, 0.3);
-    color: white;
+    color: inherit;
   }
 }
 
@@ -67,11 +83,11 @@
   }
 
   .nav-item-active {
-    @apply bg-white/10 text-white;
+    @apply bg-black/10 dark:bg-white/10 text-slate-900 dark:text-white;
   }
 
   .nav-item-inactive {
-    @apply text-slate-400 hover:text-white hover:bg-white/5;
+    @apply text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5;
   }
 
   /* Skeleton loader */
@@ -88,7 +104,7 @@
   /* Form inputs */
   .input-field {
     @apply w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl
-           px-5 py-4 sm:px-6 sm:py-5 text-base text-white/90 placeholder:text-slate-700
+           px-5 py-4 sm:px-6 sm:py-5 text-base text-slate-900 dark:text-white/90 placeholder:text-slate-400 dark:placeholder:text-slate-700
            focus:border-[var(--color-border-hover)] focus:bg-[var(--color-surface-hover)]
            outline-none transition-all resize-none leading-relaxed font-medium;
   }
@@ -118,7 +134,7 @@
   }
 
   .tone-chip-inactive {
-    @apply text-slate-500 border-[var(--color-border)] hover:bg-white/5 hover:text-slate-300;
+    @apply text-slate-500 border-[var(--color-border)] hover:bg-black/5 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-slate-300;
   }
 }
 

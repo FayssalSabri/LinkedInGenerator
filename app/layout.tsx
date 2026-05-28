@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,11 +34,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${jetbrainsMono.variable} scroll-smooth overflow-x-hidden`}>
-      <body className="font-sans text-slate-900 overflow-x-hidden bg-[var(--color-bg)]">
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+    <html lang="fr" className={`${inter.variable} ${jetbrainsMono.variable} scroll-smooth overflow-x-hidden`} suppressHydrationWarning>
+      <body className="font-sans text-slate-900 overflow-x-hidden bg-[var(--color-bg)] transition-colors duration-300">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+        </ThemeProvider>
       </body>
     </html>
   );

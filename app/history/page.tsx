@@ -26,10 +26,11 @@ export default function HistoryPage() {
     }
   };
 
-  const filteredHistory = history.filter(item =>
-    item.params.brief.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.publication.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredHistory = history.filter(item => {
+    const textToSearch = (item.params.brief || item.params.draft || '').toLowerCase();
+    return textToSearch.includes(searchQuery.toLowerCase()) ||
+           item.publication.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="h-screen w-screen bg-[var(--color-bg)] font-sans text-[var(--color-text)] overflow-hidden flex flex-col relative">
@@ -39,7 +40,7 @@ export default function HistoryPage() {
         {/* Thread Sidebar */}
         <div className="w-full sm:w-[300px] lg:w-[340px] flex flex-col bg-transparent sm:mr-8 lg:mr-16 flex-shrink-0">
           <div className="pt-8 lg:pt-16 pb-6 lg:pb-10 px-4 sm:px-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-white mb-6 lg:mb-10 tracking-tight">
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-6 lg:mb-10 tracking-tight">
               Bibliothèque
             </h2>
             <div className="relative group">
@@ -49,7 +50,7 @@ export default function HistoryPage() {
                 placeholder="Rechercher dans les archives…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 py-3 bg-[var(--color-surface)] border-b border-white/10 text-[14px] text-white focus:border-[var(--color-accent)]/60 outline-none transition-all placeholder:text-slate-500 font-medium"
+                className="w-full pl-8 py-3 bg-[var(--color-surface)] border-b border-slate-200 dark:border-white/10 text-[14px] text-slate-900 dark:text-white focus:border-[var(--color-accent)]/60 outline-none transition-all placeholder:text-slate-500 font-medium"
                 aria-label="Rechercher dans l'historique"
               />
             </div>
@@ -69,8 +70,8 @@ export default function HistoryPage() {
                     onClick={() => setSelected(item)}
                     className={`w-full text-left px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 group relative ${
                       selected?.id === item.id
-                        ? 'bg-white/[0.04] text-white'
-                        : 'text-slate-600 hover:text-slate-400 hover:bg-white/[0.02]'
+                        ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-900 dark:text-white'
+                        : 'text-slate-500 dark:text-slate-600 hover:text-slate-800 dark:hover:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
                     }`}
                     aria-pressed={selected?.id === item.id}
                   >
@@ -84,16 +85,16 @@ export default function HistoryPage() {
                       <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
                         selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-700'
                       }`}>
-                        {item.params.tone}
+                        {item.params.mode === 'roast' ? 'ROAST' : item.params.tone}
                       </span>
                       <span className="text-[9px] font-bold tabular-nums opacity-20">
                         {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
                       </span>
                     </div>
                     <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${
-                      selected?.id === item.id ? 'text-white' : 'text-slate-500'
+                      selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500'
                     }`}>
-                      {item.params.brief}
+                      {item.params.brief || item.params.draft}
                     </h4>
                   </motion.button>
                 ))
@@ -127,21 +128,21 @@ export default function HistoryPage() {
                   className="space-y-12 lg:space-y-16"
                 >
                   {/* Header */}
-                  <div className="pb-8 lg:pb-12 border-b border-white/[0.04]">
-                    <div className="space-y-4 lg:space-y-6">
+                  <div className="pb-6 lg:pb-8 border-b border-slate-200 dark:border-white/[0.04]">
+                    <div className="space-y-4 lg:space-y-5">
                       <div className="flex items-center gap-3 text-[var(--color-accent)]">
                         <div className="w-2 h-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent)]"></div>
                         <span className="text-[11px] font-black uppercase tracking-[0.25em]">Détails de l&apos;archive</span>
                       </div>
-                      <h2 className="text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.1]">
-                        {selected.params.brief}
+                      <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.2] line-clamp-2">
+                        {selected.params.brief || 'Roast de draft'}
                       </h2>
-                      <div className="flex items-center gap-4 lg:gap-8 text-slate-500 text-[11px] font-black uppercase tracking-[0.15em]">
+                      <div className="flex items-center gap-4 lg:gap-6 text-slate-500 text-[11px] font-black uppercase tracking-[0.15em]">
                         <div className="flex items-center gap-2 text-[var(--color-accent)]">
                           <div className="w-4 h-4 bg-[var(--color-accent)]/10 rounded flex items-center justify-center">
                             <div className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full"></div>
                           </div>
-                          {selected.params.tone}
+                          {selected.params.mode === 'roast' ? 'Analyse & Roast' : selected.params.tone}
                         </div>
                         <span className="opacity-20">/</span>
                         <span>
@@ -155,35 +156,58 @@ export default function HistoryPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start pt-8 lg:pt-16">
+                  <div className="flex flex-col xl:flex-row gap-8 lg:gap-12 items-start pt-6 lg:pt-8">
                     {/* Publication */}
-                    <div className="w-full lg:w-[550px] flex-shrink-0 relative group">
+                    <div className="w-full xl:w-[500px] flex-shrink-0 relative group">
                       <div className="absolute right-4 sm:right-6 top-4 sm:top-6 z-20">
                         <CopyButton text={selected.publication} />
                       </div>
                       <LinkedInPost content={selected.publication} />
                     </div>
 
-                    {/* Note */}
-                    {selected.note && (
-                      <div className="flex-1 space-y-6 lg:space-y-8 lg:pt-16">
-                        <div className="flex items-center gap-3 text-slate-500">
-                          <div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
-                            <BespokeIcons.Sparkles className="w-4 h-4" />
+                    {/* Meta Sidebar (Note + Image Prompt) */}
+                    <div className="flex-1 flex flex-col gap-8 w-full">
+                      {/* Note */}
+                      {selected.note && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 text-slate-500">
+                            <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
+                              <BespokeIcons.Sparkles className="w-4 h-4" />
+                            </div>
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">
+                              Note Stratégique
+                            </h4>
                           </div>
-                          <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">
-                            Note Stratégique
-                          </h4>
+                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] p-6 lg:p-8 text-sm lg:text-base text-slate-700 dark:text-slate-400 leading-relaxed italic font-serif relative group">
+                            <span className="absolute top-3 left-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&ldquo;</span>
+                            <span className="relative z-10 block">
+                              {selected.note}
+                            </span>
+                            <span className="absolute bottom-1 right-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&rdquo;</span>
+                          </div>
                         </div>
-                        <div className="bg-white/[0.01] border border-white/[0.04] rounded-[1.5rem] lg:rounded-[2.5rem] p-8 lg:p-12 text-base lg:text-xl text-slate-400 leading-relaxed italic font-serif relative group">
-                          <span className="absolute top-4 lg:top-6 left-6 lg:left-8 text-4xl lg:text-6xl text-white/[0.03] font-serif select-none">&ldquo;</span>
-                          <span className="relative z-10 block">
-                            {selected.note}
-                          </span>
-                          <span className="absolute bottom-2 lg:bottom-4 right-6 lg:right-8 text-4xl lg:text-6xl text-white/[0.03] font-serif select-none">&rdquo;</span>
+                      )}
+
+                      {/* Image Prompt */}
+                      {selected.imagePrompt && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3 text-slate-500">
+                            <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">
+                              Suggestion d&apos;image
+                            </h4>
+                          </div>
+                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-xl p-5 font-mono text-xs lg:text-sm text-slate-700 dark:text-slate-400 relative">
+                            <div className="absolute right-3 top-3">
+                              <CopyButton text={selected.imagePrompt} />
+                            </div>
+                            {selected.imagePrompt}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ) : (

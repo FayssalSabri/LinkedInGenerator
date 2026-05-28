@@ -1,10 +1,24 @@
 import { type GenerationParams } from './schemas';
 
-/**
- * Builds the system prompt that instructs the LLM on format, style, and constraints.
- * Uses Chain-of-Thought and few-shot prompting for reliable JSON output.
- */
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(mode: 'generate' | 'roast'): string {
+  if (mode === 'roast') {
+    return `Tu es un expert senior en communication LinkedIn, réputé pour tes analyses "roast" impitoyables mais constructives.
+Ton objectif est de prendre le brouillon fourni par l'utilisateur, d'en pointer les faiblesses, puis de proposer une version entièrement réécrite et optimisée.
+
+RÈGLES DE RÉDACTION :
+1. ACCROCHE : Assure-toi que l'accroche de ta version réécrite soit percutante.
+2. STRUCTURE : Utilise des sauts de ligne aérés.
+3. STYLE : Garde le ton du brouillon original mais en version "pro" optimisée pour l'algorithme.
+4. LIMITE STRICTE : La publication réécrite finale DOIT ABSOLUMENT faire moins de 1300 caractères (espaces compris).
+
+FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
+{
+  "publication": "Le brouillon entièrement réécrit, prêt à être publié...",
+  "note": "Ton 'Roast' : 3-4 lignes pointant ce qui n'allait pas dans l'original et comment tu l'as amélioré.",
+  "imagePrompt": "Une suggestion de prompt en ANGLAIS (max 20 mots) pour Midjourney ou DALL-E qui illustre ce post (style photoréaliste ou flat illustration)."
+}`;
+  }
+
   return `Tu es un expert senior en communication LinkedIn, spécialisé dans l'accompagnement des PME françaises.
 Ton objectif est de rédiger des publications percutantes qui respectent l'identité de marque et engagent l'audience.
 
@@ -15,38 +29,34 @@ RÈGLES DE RÉDACTION :
 4. CTA : Termine par une question ou un appel à l'action clair.
 5. LIMITE STRICTE : La publication finale DOIT ABSOLUMENT faire moins de 1300 caractères (espaces compris). C'est une limite technique infranchissable. Rédige de manière concise.
 
-PROCESSUS DE RÉFLEXION (Chain-of-Thought) :
-Avant de rédiger, analyse le ton demandé et les valeurs de l'entreprise pour choisir l'angle le plus efficace. Explique ta stratégie dans la "note d'intention".
-
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
 {
   "publication": "Contenu du post LinkedIn...",
-  "note": "Note d'intention de 3 à 5 lignes expliquant les choix éditoriaux (angle, structure, ton)."
-}
-
-EXEMPLE DE QUALITÉ (Ton: Expert) :
-{
-  "publication": "🚀 Le saviez-vous ? 80% des PME ignorent leur potentiel thermique.\\n\\nChez EcoLogis, nous avons vu des factures fondre de 30% grâce à une isolation biosourcée. Pas de magie, juste de l'expertise.\\n\\nNos clients à Lyon redécouvrent le confort d'été.\\n\\n👇 Et vous, quelle est votre priorité pour 2024 ?",
-  "note": "J'ai choisi une accroche de type 'chiffre choc' pour capter l'attention. Le ton est expert mais accessible, en mentionnant des résultats concrets pour asseoir la crédibilité."
+  "note": "Note d'intention de 3 à 5 lignes expliquant les choix éditoriaux.",
+  "imagePrompt": "Une suggestion de prompt en ANGLAIS (max 20 mots) pour Midjourney ou DALL-E qui illustre parfaitement ce post (ex: 'A professional minimalist desk setup, cinematic lighting, photorealistic --ar 16:9')."
 }`;
 }
 
-/**
- * Builds the user prompt by injecting the generation parameters.
- * @param params - Validated generation parameters (description, brief, tone)
- */
 export function buildUserPrompt(params: GenerationParams): string {
-  const { description, brief, tone } = params;
+  if (params.mode === 'roast') {
+    return `Voici mon brouillon à 'roaster' et réécrire :
+
+BROUILLON ORIGINAL :
+${params.draft}
+
+Génère la version améliorée, le roast (note), et le prompt d'image en respectant strictement le format JSON.`;
+  }
+
   return `Voici les informations pour la génération :
 
 DESCRIPTION ENTREPRISE :
-${description}
+${params.description}
 
 BRIEF DU POST :
-${brief}
+${params.brief}
 
 TON DEMANDÉ :
-${tone}
+${params.tone}
 
-Génère la publication et la note d'intention en respectant strictement le format JSON.`;
+Génère la publication, la note d'intention, et le prompt d'image en respectant strictement le format JSON.`;
 }

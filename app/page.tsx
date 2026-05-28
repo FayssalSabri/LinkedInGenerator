@@ -45,6 +45,7 @@ export default function Home() {
         params: formData,
         publication: data.publication,
         note: data.note,
+        imagePrompt: data.imagePrompt,
       });
 
     } catch (err: unknown) {
@@ -60,25 +61,25 @@ export default function Home() {
       <Navbar />
 
       {/* Main Workspace */}
-      <main className="flex-1 overflow-hidden w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-12 p-4 sm:p-6 lg:p-12">
+      <main className="flex-1 overflow-hidden w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
 
         {/* Left Column: Form */}
-        <div className="w-full lg:w-[42%] h-full flex flex-col justify-center overflow-hidden">
+        <div className="w-full lg:w-[40%] h-full flex flex-col overflow-hidden bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl p-6 lg:p-8 shadow-lg">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col max-h-full"
+            className="flex flex-col h-full"
           >
-            <div className="mb-6 lg:mb-10">
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 tracking-tight">
+            <div className="mb-6 lg:mb-8 flex-shrink-0">
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
                 Studio Créatif
               </h1>
-              <p className="text-sm sm:text-base text-slate-400 font-medium leading-relaxed max-w-md">
+              <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-md">
                 Configurez votre identité et votre message pour générer une publication LinkedIn à forte valeur ajoutée.
               </p>
             </div>
 
-            <div className="overflow-y-auto custom-scrollbar pr-2 lg:pr-4">
+            <div className="flex-1 flex flex-col">
               <Form onSubmit={handleSubmit} isLoading={isLoading} />
               <AnimatePresence>
                 {error && (
@@ -86,7 +87,7 @@ export default function Home() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    className="mt-6 lg:mt-8 p-4 bg-red-500/5 border border-red-500/20 text-red-400 text-sm font-medium rounded-2xl flex items-center gap-3"
+                    className="mt-6 lg:mt-8 p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium rounded-2xl flex items-center gap-3"
                     role="alert"
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
@@ -99,9 +100,9 @@ export default function Home() {
         </div>
 
         {/* Right Column: Result / Preview */}
-        <div className="w-full lg:w-[58%] h-full flex flex-col overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl">
-            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} />
+        <div className="w-full lg:w-[60%] h-full flex flex-col overflow-hidden relative">
+          <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl lg:pl-6">
+            <Result publication={result?.publication} note={result?.note} imagePrompt={result?.imagePrompt} isLoading={isLoading} />
           </div>
         </div>
 

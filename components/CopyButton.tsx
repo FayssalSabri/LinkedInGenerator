@@ -21,7 +21,7 @@ export default function CopyButton({ text, className = '' }: CopyButtonProps) {
       className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-500 shadow-lg ${
         copied
           ? 'bg-green-500 text-white'
-          : 'bg-white/10 text-white/50 hover:bg-[var(--color-accent)] hover:text-white backdrop-blur-md border border-white/10'
+          : 'bg-black/5 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:bg-[var(--color-accent)] hover:text-white backdrop-blur-md border border-black/5 dark:border-white/10'
       } ${className}`}
       title="Copier le texte"
       aria-label={copied ? 'Texte copié' : 'Copier le texte'}

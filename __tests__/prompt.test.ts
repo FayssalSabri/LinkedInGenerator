@@ -4,26 +4,25 @@ import { type GenerationParams } from '../lib/schemas';
 
 describe('buildSystemPrompt', () => {
   it('contient les règles de rédaction essentielles', () => {
-    const prompt = buildSystemPrompt();
+    const prompt = buildSystemPrompt('generate');
     expect(prompt).toContain('ACCROCHE');
     expect(prompt).toContain('1300 caractères');
-    expect(prompt).toContain('JSON');
   });
 
-  it('inclut un exemple de qualité (few-shot)', () => {
-    const prompt = buildSystemPrompt();
-    expect(prompt).toContain('EXEMPLE DE QUALITÉ');
+  it('inclut un exemple de qualité (few-shot) ou le format JSON', () => {
+    const prompt = buildSystemPrompt('generate');
+    expect(prompt).toContain('FORMAT DE RÉPONSE OBLIGATOIRE');
     expect(prompt).toContain('"publication"');
     expect(prompt).toContain('"note"');
   });
 
-  it('décrit le processus Chain-of-Thought', () => {
-    const prompt = buildSystemPrompt();
-    expect(prompt).toContain('Chain-of-Thought');
+  it('décrit l\'obligation d\'imagePrompt', () => {
+    const prompt = buildSystemPrompt('generate');
+    expect(prompt).toContain('imagePrompt');
   });
 
   it('impose le format JSON obligatoire', () => {
-    const prompt = buildSystemPrompt();
+    const prompt = buildSystemPrompt('generate');
     expect(prompt).toContain('FORMAT DE RÉPONSE OBLIGATOIRE');
     expect(prompt).toContain('JSON uniquement');
   });
@@ -31,6 +30,7 @@ describe('buildSystemPrompt', () => {
 
 describe('buildUserPrompt', () => {
   const params: GenerationParams = {
+    mode: 'generate',
     description: 'Entreprise de conseil en transformation digitale.',
     brief: 'Annonce de recrutement d\'un développeur senior.',
     tone: 'Professionnel'

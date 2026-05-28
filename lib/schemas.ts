@@ -1,15 +1,23 @@
 import { z } from 'zod';
 
 export const generationSchema = z.object({
-  description: z.string()
-    .min(10, "La description doit faire au moins 10 caractères.")
-    .max(2000, "La description ne peut pas dépasser 2000 caractères."),
-  brief: z.string()
-    .min(5, "Le brief doit faire au moins 5 caractères.")
-    .max(500, "Le brief ne peut pas dépasser 500 caractères."),
+  mode: z.enum(['generate', 'roast']).default('generate'),
+  description: z.string().optional(),
+  brief: z.string().optional(),
+  draft: z.string().optional(),
   tone: z.enum(['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'], {
     error: "Veuillez sélectionner un ton valide."
-  }),
+  }).optional(),
+}).refine(data => {
+  if (data.mode === 'generate') {
+    return !!data.description && !!data.brief && !!data.tone;
+  } else if (data.mode === 'roast') {
+    return !!data.draft;
+  }
+  return false;
+}, {
+  message: "Veuillez remplir les champs obligatoires selon le mode sélectionné.",
+  path: ["mode"],
 });
 
 export type GenerationParams = z.infer<typeof generationSchema>;
@@ -17,6 +25,7 @@ export type GenerationParams = z.infer<typeof generationSchema>;
 export const responseSchema = z.object({
   publication: z.string().min(1).max(1300),
   note: z.string().min(1),
+  imagePrompt: z.string().optional(),
 });
 
 export type GenerationResponse = z.infer<typeof responseSchema>;
