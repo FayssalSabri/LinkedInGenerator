@@ -25,7 +25,6 @@ export type GenerationParams = z.infer<typeof generationSchema>;
 export const responseSchema = z.object({
   publication: z.string().min(1).max(1300),
   note: z.string().min(1),
-  imagePrompt: z.string().optional(),
 });
 
 export type GenerationResponse = z.infer<typeof responseSchema>;

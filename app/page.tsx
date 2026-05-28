@@ -45,7 +45,6 @@ export default function Home() {
         params: formData,
         publication: data.publication,
         note: data.note,
-        imagePrompt: data.imagePrompt,
       });
 
     } catch (err: unknown) {
@@ -102,7 +101,7 @@ export default function Home() {
         {/* Right Column: Result / Preview */}
         <div className="w-full lg:w-[60%] h-full flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl lg:pl-6">
-            <Result publication={result?.publication} note={result?.note} imagePrompt={result?.imagePrompt} isLoading={isLoading} />
+            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} />
           </div>
         </div>
 

@@ -165,9 +165,8 @@ export default function HistoryPage() {
                       <LinkedInPost content={selected.publication} />
                     </div>
 
-                    {/* Meta Sidebar (Note + Image Prompt) */}
+                    {/* Note */}
                     <div className="flex-1 flex flex-col gap-8 w-full">
-                      {/* Note */}
                       {selected.note && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-3 text-slate-500">
@@ -184,26 +183,6 @@ export default function HistoryPage() {
                               {selected.note}
                             </span>
                             <span className="absolute bottom-1 right-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&rdquo;</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Image Prompt */}
-                      {selected.imagePrompt && (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3 text-slate-500">
-                            <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            </div>
-                            <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">
-                              Suggestion d&apos;image
-                            </h4>
-                          </div>
-                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-xl p-5 font-mono text-xs lg:text-sm text-slate-700 dark:text-slate-400 relative">
-                            <div className="absolute right-3 top-3">
-                              <CopyButton text={selected.imagePrompt} />
-                            </div>
-                            {selected.imagePrompt}
                           </div>
                         </div>
                       )}

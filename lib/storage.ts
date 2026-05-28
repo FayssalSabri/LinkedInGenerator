@@ -15,7 +15,6 @@ export interface HistoryItem {
   };
   publication: string;
   note: string;
-  imagePrompt?: string;
 }
 
 const STORAGE_KEY = 'linkedin_history';

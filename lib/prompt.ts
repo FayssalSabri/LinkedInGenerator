@@ -14,8 +14,7 @@ RÈGLES DE RÉDACTION :
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
 {
   "publication": "Le brouillon entièrement réécrit, prêt à être publié...",
-  "note": "Ton 'Roast' : 3-4 lignes pointant ce qui n'allait pas dans l'original et comment tu l'as amélioré.",
-  "imagePrompt": "Une suggestion de prompt en ANGLAIS (max 20 mots) pour Midjourney ou DALL-E qui illustre ce post (style photoréaliste ou flat illustration)."
+  "note": "Ton 'Roast' : 3-4 lignes pointant ce qui n'allait pas dans l'original et comment tu l'as amélioré."
 }`;
   }
 
@@ -32,8 +31,7 @@ RÈGLES DE RÉDACTION :
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
 {
   "publication": "Contenu du post LinkedIn...",
-  "note": "Note d'intention de 3 à 5 lignes expliquant les choix éditoriaux.",
-  "imagePrompt": "Une suggestion de prompt en ANGLAIS (max 20 mots) pour Midjourney ou DALL-E qui illustre parfaitement ce post (ex: 'A professional minimalist desk setup, cinematic lighting, photorealistic --ar 16:9')."
+  "note": "Note d'intention de 3 à 5 lignes expliquant les choix éditoriaux."
 }`;
 }
 
@@ -44,7 +42,7 @@ export function buildUserPrompt(params: GenerationParams): string {
 BROUILLON ORIGINAL :
 ${params.draft}
 
-Génère la version améliorée, le roast (note), et le prompt d'image en respectant strictement le format JSON.`;
+Génère la version améliorée et le roast (note) en respectant strictement le format JSON.`;
   }
 
   return `Voici les informations pour la génération :
@@ -58,5 +56,5 @@ ${params.brief}
 TON DEMANDÉ :
 ${params.tone}
 
-Génère la publication, la note d'intention, et le prompt d'image en respectant strictement le format JSON.`;
+Génère la publication et la note d'intention en respectant strictement le format JSON.`;
 }
