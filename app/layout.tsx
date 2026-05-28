@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,7 +44,10 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <ErrorBoundary>
-            {children}
+            <>
+              {children}
+              <Toaster position="top-right" richColors />
+            </>
           </ErrorBoundary>
         </ThemeProvider>
       </body>

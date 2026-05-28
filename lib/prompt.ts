@@ -1,6 +1,22 @@
 import { type GenerationParams } from './schemas';
 
-export function buildSystemPrompt(mode: 'generate' | 'roast'): string {
+export function buildSystemPrompt(mode: 'generate' | 'roast' | 'improve'): string {
+  if (mode === 'improve') {
+    return `Tu es un expert en communication LinkedIn. L'utilisateur te fournit une publication précédemment générée et des instructions (feedback).
+Ton objectif est de réécrire la publication en appliquant STRICTEMENT le feedback demandé.
+
+RÈGLES DE RÉDACTION :
+1. RESPECT DU FEEDBACK : Applique les demandes de l'utilisateur (raccourcir, changer le ton, ajouter des emojis, etc.).
+2. LIMITE STRICTE : La publication finale DOIT ABSOLUMENT faire moins de 1300 caractères.
+3. CONTEXTE : Garde le message principal intact, sauf si le feedback demande de le changer.
+
+FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
+{
+  "publication": "La publication réécrite...",
+  "note": "Explication courte de comment tu as intégré le feedback."
+}`;
+  }
+
   if (mode === 'roast') {
     return `Tu es un expert senior en communication LinkedIn, réputé pour tes analyses "roast" impitoyables mais constructives.
 Ton objectif est de prendre le brouillon fourni par l'utilisateur, d'en pointer les faiblesses, puis de proposer une version entièrement réécrite et optimisée.
@@ -36,6 +52,16 @@ FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
 }
 
 export function buildUserPrompt(params: GenerationParams): string {
+  if (params.mode === 'improve') {
+    return `Voici la publication originale :
+${params.draft}
+
+FEEDBACK POUR AMÉLIORER :
+${params.feedback}
+
+Génère la version améliorée et la note explicative en respectant strictement le format JSON.`;
+  }
+
   if (params.mode === 'roast') {
     return `Voici mon brouillon à 'roaster' et réécrire :
 

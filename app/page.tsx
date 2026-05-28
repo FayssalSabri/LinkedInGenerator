@@ -7,9 +7,11 @@ import Result from '@/components/Result';
 import Navbar from '@/components/Navbar';
 import { type GenerationParams, type GenerationResponse } from '@/lib/schemas';
 import { saveToHistory } from '@/lib/storage';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [result, setResult] = useState<GenerationResponse | null>(null);
+  const [currentFormData, setCurrentFormData] = useState<GenerationParams | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -20,6 +22,7 @@ export default function Home() {
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
+    setCurrentFormData(formData);
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -47,13 +50,69 @@ export default function Home() {
         note: data.note,
       });
 
+      toast.success('Publication générée avec succès');
+
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') return;
-      setError(err instanceof Error ? err.message : 'Une erreur inattendue est survenue.');
+      const errorMsg = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
   }, []);
+
+  const handleImprove = useCallback(async (feedback: string) => {
+    if (!result?.publication || !currentFormData) return;
+    
+    const improveData: GenerationParams = {
+      ...currentFormData,
+      mode: 'improve',
+      draft: result.publication,
+      feedback: feedback
+    };
+
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setIsLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(improveData),
+        signal: controller.signal,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Une erreur est survenue.');
+      }
+
+      setResult(data);
+
+      saveToHistory({
+        params: improveData,
+        publication: data.publication,
+        note: data.note,
+      });
+
+      toast.success('Publication améliorée avec succès');
+
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      const errorMsg = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.';
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [result, currentFormData]);
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[var(--color-bg)]">
@@ -101,7 +160,7 @@ export default function Home() {
         {/* Right Column: Result / Preview */}
         <div className="w-full lg:w-[60%] h-full flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl lg:pl-6">
-            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} />
+            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} onImprove={handleImprove} />
           </div>
         </div>
 

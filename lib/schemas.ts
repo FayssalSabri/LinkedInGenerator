@@ -1,10 +1,11 @@
 import { z } from 'zod';
 
 export const generationSchema = z.object({
-  mode: z.enum(['generate', 'roast']).default('generate'),
+  mode: z.enum(['generate', 'roast', 'improve']).default('generate'),
   description: z.string().optional(),
   brief: z.string().optional(),
   draft: z.string().optional(),
+  feedback: z.string().optional(),
   tone: z.enum(['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'], {
     error: "Veuillez sélectionner un ton valide."
   }).optional(),
@@ -13,6 +14,8 @@ export const generationSchema = z.object({
     return !!data.description && !!data.brief && !!data.tone;
   } else if (data.mode === 'roast') {
     return !!data.draft;
+  } else if (data.mode === 'improve') {
+    return !!data.draft && !!data.feedback;
   }
   return false;
 }, {

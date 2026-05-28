@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Send } from 'lucide-react';
 import LinkedInPost from './LinkedInPost';
 import CopyButton from './CopyButton';
 import { BespokeIcons } from './BespokeIcons';
@@ -9,9 +11,18 @@ interface ResultProps {
   publication?: string;
   note?: string;
   isLoading: boolean;
+  onImprove?: (feedback: string) => void;
 }
 
-export default function Result({ publication, note, isLoading }: ResultProps) {
+export default function Result({ publication, note, isLoading, onImprove }: ResultProps) {
+  const [feedback, setFeedback] = useState('');
+
+  const handleImprove = () => {
+    if (feedback.trim() && onImprove) {
+      onImprove(feedback);
+      setFeedback('');
+    }
+  };
   return (
     <div className="w-full flex-1 flex flex-col relative z-10 h-full">
       <AnimatePresence mode="wait">
@@ -66,6 +77,10 @@ export default function Result({ publication, note, isLoading }: ResultProps) {
                 <CopyButton text={publication} />
               </div>
               <LinkedInPost content={publication} shouldStream={true} />
+              <div className="absolute -bottom-6 right-2 text-xs font-medium text-slate-500 flex items-center gap-1.5 opacity-80">
+                <span className={`w-1.5 h-1.5 rounded-full ${publication.length > 1300 ? 'bg-red-500' : 'bg-emerald-500'}`}></span>
+                {publication.length} / 1300 caractères
+              </div>
             </div>
 
             {/* Strategic Note */}
@@ -89,6 +104,35 @@ export default function Result({ publication, note, isLoading }: ResultProps) {
               </div>
             )}
 
+            {/* Improvement Feedback Box */}
+            {publication && onImprove && (
+              <div className="w-full max-w-[550px] mt-4">
+                <div className="relative group">
+                  <input
+                    type="text"
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleImprove();
+                      }
+                    }}
+                    placeholder="Ex: Rends ça plus percutant, Rends ça plus long, ajoute des emojis..."
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/[0.1] rounded-2xl py-3 pl-4 pr-12 text-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent transition-all shadow-sm"
+                    disabled={isLoading}
+                  />
+                  <button
+                    onClick={handleImprove}
+                    disabled={!feedback.trim() || isLoading}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-[var(--color-accent)] text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--color-accent-hover)] transition-colors"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
           </motion.div>
         ) : (
           <motion.div
@@ -99,7 +143,7 @@ export default function Result({ publication, note, isLoading }: ResultProps) {
           >
             <div className="mb-6">
               <svg className="w-10 h-10 animate-spin-slow text-slate-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
