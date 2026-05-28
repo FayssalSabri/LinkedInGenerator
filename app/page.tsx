@@ -71,7 +71,7 @@ export default function Home() {
           >
             <div className="mb-6 lg:mb-8 flex-shrink-0">
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
-                Studio Créatif
+                Forge Studio
               </h1>
               <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-md">
                 Configurez votre identité et votre message pour générer une publication LinkedIn à forte valeur ajoutée.
