@@ -116,7 +116,7 @@ export default function Home() {
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[var(--color-bg)]">
-      <Navbar />
+      <Navbar isAnimating={isLoading} />
 
       {/* Main Workspace */}
       <main className="flex-1 overflow-hidden w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">

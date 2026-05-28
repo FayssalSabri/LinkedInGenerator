@@ -214,7 +214,10 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
         >
           {isLoading ? (
             <div className="flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              <div className="relative w-6 h-6 flex items-center justify-center overflow-hidden">
+                <img src="/logo-white.gif" alt="Loading" className="w-full h-full object-contain animate-leap opacity-70 dark:hidden" />
+                <img src="/logo_no_bg.gif" alt="Loading" className="w-full h-full object-contain animate-leap opacity-70 hidden dark:block" />
+              </div>
               <span className="font-semibold">{mode === 'generate' ? 'Génération...' : 'Analyse en cours...'}</span>
             </div>
           ) : (

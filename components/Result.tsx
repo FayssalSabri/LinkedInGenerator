@@ -56,7 +56,10 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
             </div>
 
             <div className="flex items-center gap-4 text-[var(--color-accent)] bg-[var(--color-accent-subtle)] px-6 sm:px-8 py-3 sm:py-4 rounded-2xl border border-[var(--color-accent)]/10 backdrop-blur-sm">
-              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+              <div className="relative w-8 h-8 flex items-center justify-center overflow-hidden">
+                <img src="/logo-white.gif" alt="Loading" className="w-full h-full object-contain animate-leap dark:hidden" />
+                <img src="/logo_no_bg.gif" alt="Loading" className="w-full h-full object-contain animate-leap hidden dark:block" />
+              </div>
               <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">
                 Forge en cours…
               </span>
@@ -139,12 +142,11 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col items-center justify-center text-center h-full opacity-30"
+            className="flex-1 flex flex-col items-center justify-center text-center h-full opacity-100 transition-opacity duration-500"
           >
-            <div className="mb-6">
-              <svg className="w-10 h-10 animate-spin-slow text-slate-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.07 4.93L16.24 7.76M7.76 16.24L4.93 19.07M19.07 19.07L16.24 16.24M7.76 7.76L4.93 4.93" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+            <div className="mb-6 relative w-20 h-20 flex items-center justify-center overflow-hidden opacity-80 transition-all duration-500">
+              <img src="/logo-white.gif" alt="Forge Studio" className="w-full h-full object-contain dark:hidden" />
+              <img src="/logo_no_bg.gif" alt="Forge Studio" className="w-full h-full object-contain hidden dark:block" />
             </div>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
               En attente de configuration…

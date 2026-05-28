@@ -10,7 +10,7 @@ import { ThemeToggle } from './ThemeToggle';
  * Uses pathname to determine active state — eliminates duplication
  * between page.tsx and history/page.tsx.
  */
-export default function Navbar() {
+export default function Navbar({ isAnimating = false }: { isAnimating?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -20,11 +20,16 @@ export default function Navbar() {
       aria-label="Navigation principale"
     >
       <Link href="/" className="flex items-center gap-4 group" aria-label="Accueil Forge Studio">
-        <div className="relative w-14 h-14 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all">
+        <div className={`relative w-14 h-14 flex items-center justify-center overflow-hidden transition-all ${isAnimating ? 'animate-leap text-[var(--color-accent)]' : 'group-hover:scale-105'}`}>
           <img
-            src="/logo.png"
+            src="/logo-white.gif"
             alt="Forge Studio"
-            className="w-full h-full object-cover scale-150"
+            className="w-full h-full object-contain dark:hidden"
+          />
+          <img
+            src="/logo_no_bg.gif"
+            alt="Forge Studio"
+            className="w-full h-full object-contain hidden dark:block"
           />
         </div>
         <span className="font-semibold text-xl tracking-tight text-slate-900 dark:text-white/90 hidden sm:inline">

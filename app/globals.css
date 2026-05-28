@@ -148,6 +148,16 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes leap {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(6deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(2px) rotate(-2deg); }
+}
+.animate-leap {
+  animation: leap 0.5s infinite ease-in-out;
+}
+
 .animate-spin-slow {
   animation: spin 8s linear infinite;
 }
