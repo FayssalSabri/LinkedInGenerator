@@ -1,33 +1,67 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LinkedInPost from '@/components/LinkedInPost';
 import CopyButton from '@/components/CopyButton';
 import Navbar from '@/components/Navbar';
 import { BespokeIcons } from '@/components/BespokeIcons';
-import { Search } from 'lucide-react';
-import { getHistory, clearHistory as clearStoredHistory, type HistoryItem } from '@/lib/storage';
+import { Search, Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface DbHistoryItem {
+  id: string;
+  userId: string;
+  timestamp: string;
+  mode: string | null;
+  description: string | null;
+  brief: string | null;
+  tone: string | null;
+  draft: string | null;
+  publication: string;
+  note: string;
+}
 
 export default function HistoryPage() {
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [selected, setSelected] = useState<HistoryItem | null>(null);
+  const [history, setHistory] = useState<DbHistoryItem[]>([]);
+  const [selected, setSelected] = useState<DbHistoryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setHistory(getHistory());
+  const fetchHistory = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/history');
+      if (!res.ok) throw new Error('Erreur de chargement');
+      const data = await res.json();
+      setHistory(data);
+    } catch {
+      toast.error('Impossible de charger l\'historique');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const handleClearHistory = () => {
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  const handleClearHistory = async () => {
     if (confirm('Voulez-vous vraiment effacer tout l\'historique ?')) {
-      clearStoredHistory();
-      setHistory([]);
-      setSelected(null);
+      try {
+        const res = await fetch('/api/history', { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        setHistory([]);
+        setSelected(null);
+        toast.success('Historique effacé');
+      } catch {
+        toast.error('Impossible de supprimer l\'historique');
+      }
     }
   };
 
   const filteredHistory = history.filter(item => {
-    const textToSearch = (item.params.brief || item.params.draft || '').toLowerCase();
+    const textToSearch = (item.brief || item.draft || '').toLowerCase();
     return textToSearch.includes(searchQuery.toLowerCase()) ||
            item.publication.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -57,57 +91,67 @@ export default function HistoryPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1 pb-6 lg:pb-10">
-            <AnimatePresence mode="popLayout">
-              {filteredHistory.length === 0 ? (
-                <div className="h-40 flex flex-col items-center justify-center text-center opacity-10">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em]">Aucune archive</p>
-                </div>
-              ) : (
-                filteredHistory.map((item) => (
-                  <motion.button
-                    key={item.id}
-                    layout
-                    onClick={() => setSelected(item)}
-                    className={`w-full text-left px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 group relative ${
-                      selected?.id === item.id
-                        ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-900 dark:text-white'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
-                    }`}
-                    aria-pressed={selected?.id === item.id}
-                  >
-                    {selected?.id === item.id && (
-                      <motion.div
-                        layoutId="active-dot"
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)]"
-                      />
-                    )}
-                    <div className="flex justify-between items-center mb-1">
-                      <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
-                        selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-500 dark:text-slate-400'
+            {isLoading ? (
+              <div className="h-40 flex flex-col items-center justify-center text-center gap-3">
+                <Loader2 className="w-5 h-5 animate-spin text-[var(--color-accent)]" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  Chargement…
+                </p>
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {filteredHistory.length === 0 ? (
+                  <div className="h-40 flex flex-col items-center justify-center text-center opacity-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">Aucune archive</p>
+                  </div>
+                ) : (
+                  filteredHistory.map((item) => (
+                    <motion.button
+                      key={item.id}
+                      layout
+                      onClick={() => setSelected(item)}
+                      className={`w-full text-left px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 group relative ${
+                        selected?.id === item.id
+                          ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-900 dark:text-white'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
+                      }`}
+                      aria-pressed={selected?.id === item.id}
+                    >
+                      {selected?.id === item.id && (
+                        <motion.div
+                          layoutId="active-dot"
+                          className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)]"
+                        />
+                      )}
+                      <div className="flex justify-between items-center mb-1">
+                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
+                          selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-500 dark:text-slate-400'
+                        }`}>
+                          {item.mode === 'roast' ? 'ROAST' : item.tone || 'Génération'}
+                        </span>
+                        <span className="text-[9px] font-bold tabular-nums opacity-20">
+                          {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                        </span>
+                      </div>
+                      <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${
+                        selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-300'
                       }`}>
-                        {item.params.mode === 'roast' ? 'ROAST' : item.params.tone}
-                      </span>
-                      <span className="text-[9px] font-bold tabular-nums opacity-20">
-                        {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
-                      </span>
-                    </div>
-                    <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${
-                      selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-300'
-                    }`}>
-                      {item.params.brief || item.params.draft}
-                    </h4>
-                  </motion.button>
-                ))
-              )}
-            </AnimatePresence>
+                        {item.brief || item.draft || 'Publication'}
+                      </h4>
+                    </motion.button>
+                  ))
+                )}
+              </AnimatePresence>
+            )}
           </div>
 
           {history.length > 0 && (
             <div className="p-4 sm:p-8 pb-6 lg:pb-12">
               <button
                 onClick={handleClearHistory}
-                className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all"
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all"
               >
+                <Trash2 className="w-3 h-3" />
                 Tout effacer
               </button>
             </div>
@@ -135,14 +179,14 @@ export default function HistoryPage() {
                         <span className="text-[11px] font-black uppercase tracking-[0.25em]">Détails de l&apos;archive</span>
                       </div>
                       <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.2] line-clamp-2">
-                        {selected.params.brief || 'Roast de draft'}
+                        {selected.brief || 'Roast de draft'}
                       </h2>
                       <div className="flex items-center gap-4 lg:gap-6 text-slate-500 dark:text-slate-400 text-[11px] font-black uppercase tracking-[0.15em]">
                         <div className="flex items-center gap-2 text-[var(--color-accent)]">
                           <div className="w-4 h-4 bg-[var(--color-accent)]/10 rounded flex items-center justify-center">
                             <div className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full"></div>
                           </div>
-                          {selected.params.mode === 'roast' ? 'Analyse & Roast' : selected.params.tone}
+                          {selected.mode === 'roast' ? 'Analyse & Roast' : selected.tone || 'Génération'}
                         </div>
                         <span className="opacity-20">/</span>
                         <span>

@@ -6,7 +6,6 @@ import Form from '@/components/Form';
 import Result from '@/components/Result';
 import Navbar from '@/components/Navbar';
 import { type GenerationParams, type GenerationResponse } from '@/lib/schemas';
-import { saveToHistory } from '@/lib/storage';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -15,6 +14,28 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  /** Save generation to the database via API (auth-aware). */
+  const saveToDb = useCallback(async (params: GenerationParams, publication: string, note: string) => {
+    try {
+      await fetch('/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: params.mode,
+          description: params.description,
+          brief: params.brief,
+          tone: params.tone,
+          draft: params.draft,
+          publication,
+          note,
+        }),
+      });
+    } catch {
+      // Silently fail — history is non-critical
+      console.warn('[storage] Failed to save to database');
+    }
+  }, []);
 
   const handleSubmit = useCallback(async (formData: GenerationParams) => {
     // Cancel any in-flight request
@@ -43,12 +64,8 @@ export default function Home() {
 
       setResult(data);
 
-      // Save to history via safe storage wrapper
-      saveToHistory({
-        params: formData,
-        publication: data.publication,
-        note: data.note,
-      });
+      // Save to database (per-user, via Clerk auth)
+      saveToDb(formData, data.publication, data.note);
 
       toast.success('Publication générée avec succès');
 
@@ -60,7 +77,7 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [saveToDb]);
 
   const handleImprove = useCallback(async (feedback: string) => {
     if (!result?.publication || !currentFormData) return;
@@ -96,11 +113,7 @@ export default function Home() {
 
       setResult(data);
 
-      saveToHistory({
-        params: improveData,
-        publication: data.publication,
-        note: data.note,
-      });
+      saveToDb(improveData, data.publication, data.note);
 
       toast.success('Publication améliorée avec succès');
 
@@ -112,7 +125,7 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [result, currentFormData]);
+  }, [result, currentFormData, saveToDb]);
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[var(--color-bg)]">

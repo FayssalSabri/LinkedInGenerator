@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model HistoryItem {
+  id          String   @id @default(uuid())
+  userId      String
+  timestamp   DateTime @default(now())
+  mode        String?
+  description String?
+  brief       String?
+  tone        String?
+  draft       String?
+  publication String
+  note        String
+
+  @@index([userId])
+}
