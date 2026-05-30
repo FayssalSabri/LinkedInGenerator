@@ -1,6 +1,8 @@
 import { type GenerationParams } from './schemas';
 
-export function buildSystemPrompt(mode: 'generate' | 'roast' | 'improve'): string {
+export function buildSystemPrompt(
+  mode: 'generate' | 'roast' | 'improve'
+): string {
   if (mode === 'improve') {
     return `Tu es un expert en communication LinkedIn. L'utilisateur te fournit une publication précédemment générée et des instructions (feedback).
 Ton objectif est de réécrire la publication en appliquant STRICTEMENT le feedback demandé.

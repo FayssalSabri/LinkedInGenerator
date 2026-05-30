@@ -36,18 +36,35 @@ export default function HistoryPage() {
       const data = await res.json();
       setHistory(data);
     } catch {
-      toast.error('Impossible de charger l\'historique');
+      toast.error("Impossible de charger l'historique");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/history');
+        if (!res.ok) throw new Error('Erreur de chargement');
+        const data = await res.json();
+        if (!cancelled) setHistory(data);
+      } catch {
+        if (!cancelled) toast.error("Impossible de charger l'historique");
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleClearHistory = async () => {
-    if (confirm('Voulez-vous vraiment effacer tout l\'historique ?')) {
+    if (confirm("Voulez-vous vraiment effacer tout l'historique ?")) {
       try {
         const res = await fetch('/api/history', { method: 'DELETE' });
         if (!res.ok) throw new Error();
@@ -55,45 +72,47 @@ export default function HistoryPage() {
         setSelected(null);
         toast.success('Historique effacé');
       } catch {
-        toast.error('Impossible de supprimer l\'historique');
+        toast.error("Impossible de supprimer l'historique");
       }
     }
   };
 
-  const filteredHistory = history.filter(item => {
+  const filteredHistory = history.filter((item) => {
     const textToSearch = (item.brief || item.draft || '').toLowerCase();
-    return textToSearch.includes(searchQuery.toLowerCase()) ||
-           item.publication.toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      textToSearch.includes(searchQuery.toLowerCase()) ||
+      item.publication.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   return (
-    <div className="h-screen w-screen bg-[var(--color-bg)] font-sans text-[var(--color-text)] overflow-hidden flex flex-col relative">
+    <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-bg)] font-sans text-[var(--color-text)]">
       <Navbar />
 
-      <main className="flex-1 flex overflow-hidden w-full max-w-[1600px] mx-auto">
+      <main className="mx-auto flex w-full max-w-[1600px] flex-1 overflow-hidden">
         {/* Thread Sidebar */}
-        <div className="w-full sm:w-[300px] lg:w-[340px] flex flex-col bg-transparent sm:mr-8 lg:mr-16 flex-shrink-0">
-          <div className="pt-8 lg:pt-16 pb-6 lg:pb-10 px-4 sm:px-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-6 lg:mb-10 tracking-tight">
+        <div className="flex w-full flex-shrink-0 flex-col bg-transparent sm:mr-8 sm:w-[300px] lg:mr-16 lg:w-[340px]">
+          <div className="px-4 pb-6 pt-8 sm:px-8 lg:pb-10 lg:pt-16">
+            <h2 className="mb-6 text-2xl font-bold tracking-tight text-slate-900 dark:text-white lg:mb-10 lg:text-3xl">
               Bibliothèque
             </h2>
-            <div className="relative group">
-              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[var(--color-accent)] transition-colors" />
+            <div className="group relative">
+              <Search className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-[var(--color-accent)]" />
               <input
                 type="text"
                 placeholder="Rechercher dans les archives…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 py-3 bg-[var(--color-surface)] border-b border-slate-200 dark:border-white/10 text-[14px] text-slate-900 dark:text-white focus:border-[var(--color-accent)]/60 outline-none transition-all placeholder:text-slate-500 dark:placeholder:text-slate-400 font-medium"
+                className="focus:border-[var(--color-accent)]/60 w-full border-b border-slate-200 bg-[var(--color-surface)] py-3 pl-8 text-[14px] font-medium text-slate-900 outline-none transition-all placeholder:text-slate-500 dark:border-white/10 dark:text-white dark:placeholder:text-slate-400"
                 aria-label="Rechercher dans l'historique"
               />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1 pb-6 lg:pb-10">
+          <div className="custom-scrollbar flex-1 space-y-1 overflow-y-auto px-2 pb-6 lg:pb-10">
             {isLoading ? (
-              <div className="h-40 flex flex-col items-center justify-center text-center gap-3">
-                <Loader2 className="w-5 h-5 animate-spin text-[var(--color-accent)]" />
+              <div className="flex h-40 flex-col items-center justify-center gap-3 text-center">
+                <Loader2 className="h-5 w-5 animate-spin text-[var(--color-accent)]" />
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   Chargement…
                 </p>
@@ -101,8 +120,10 @@ export default function HistoryPage() {
             ) : (
               <AnimatePresence mode="popLayout">
                 {filteredHistory.length === 0 ? (
-                  <div className="h-40 flex flex-col items-center justify-center text-center opacity-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">Aucune archive</p>
+                  <div className="flex h-40 flex-col items-center justify-center text-center opacity-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">
+                      Aucune archive
+                    </p>
                   </div>
                 ) : (
                   filteredHistory.map((item) => (
@@ -110,32 +131,45 @@ export default function HistoryPage() {
                       key={item.id}
                       layout
                       onClick={() => setSelected(item)}
-                      className={`w-full text-left px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 group relative ${
+                      className={`group relative w-full rounded-2xl px-4 py-4 text-left transition-all duration-300 sm:px-6 ${
                         selected?.id === item.id
-                          ? 'bg-slate-100 dark:bg-white/[0.04] text-slate-900 dark:text-white'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.02]'
+                          ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.04] dark:text-white'
+                          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-white/[0.02] dark:hover:text-slate-300'
                       }`}
                       aria-pressed={selected?.id === item.id}
                     >
                       {selected?.id === item.id && (
                         <motion.div
                           layoutId="active-dot"
-                          className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full shadow-[0_0_10px_var(--color-accent)]"
+                          className="absolute left-2 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--color-accent)] shadow-[0_0_10px_var(--color-accent)]"
                         />
                       )}
-                      <div className="flex justify-between items-center mb-1">
-                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${
-                          selected?.id === item.id ? 'text-[var(--color-accent)]' : 'text-slate-500 dark:text-slate-400'
-                        }`}>
-                          {item.mode === 'roast' ? 'ROAST' : item.tone || 'Génération'}
+                      <div className="mb-1 flex items-center justify-between">
+                        <span
+                          className={`text-[9px] font-black uppercase tracking-[0.2em] ${
+                            selected?.id === item.id
+                              ? 'text-[var(--color-accent)]'
+                              : 'text-slate-500 dark:text-slate-400'
+                          }`}
+                        >
+                          {item.mode === 'roast'
+                            ? 'ROAST'
+                            : item.tone || 'Génération'}
                         </span>
                         <span className="text-[9px] font-bold tabular-nums opacity-20">
-                          {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}
+                          {new Date(item.timestamp).toLocaleDateString(
+                            'fr-FR',
+                            { day: '2-digit', month: 'short' }
+                          )}
                         </span>
                       </div>
-                      <h4 className={`text-[15px] font-medium line-clamp-1 transition-colors ${
-                        selected?.id === item.id ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-300'
-                      }`}>
+                      <h4
+                        className={`line-clamp-1 text-[15px] font-medium transition-colors ${
+                          selected?.id === item.id
+                            ? 'text-slate-900 dark:text-white'
+                            : 'text-slate-500 dark:text-slate-300'
+                        }`}
+                      >
                         {item.brief || item.draft || 'Publication'}
                       </h4>
                     </motion.button>
@@ -146,12 +180,12 @@ export default function HistoryPage() {
           </div>
 
           {history.length > 0 && (
-            <div className="p-4 sm:p-8 pb-6 lg:pb-12">
+            <div className="p-4 pb-6 sm:p-8 lg:pb-12">
               <button
                 onClick={handleClearHistory}
-                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-all"
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-red-500 transition-all hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
               >
-                <Trash2 className="w-3 h-3" />
+                <Trash2 className="h-3 w-3" />
                 Tout effacer
               </button>
             </div>
@@ -159,8 +193,8 @@ export default function HistoryPage() {
         </div>
 
         {/* Content Viewer */}
-        <div className="hidden sm:flex flex-1 overflow-hidden flex-col items-center justify-center">
-          <div className="w-full max-w-[1200px] px-4 lg:px-12 overflow-y-auto custom-scrollbar max-h-screen py-8 lg:py-12">
+        <div className="hidden flex-1 flex-col items-center justify-center overflow-hidden sm:flex">
+          <div className="custom-scrollbar max-h-screen w-full max-w-[1200px] overflow-y-auto px-4 py-8 lg:px-12 lg:py-12">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -168,65 +202,76 @@ export default function HistoryPage() {
                   initial={{ opacity: 0, scale: 0.98, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98, y: -20 }}
-                  transition={{ type: "spring", damping: 25, stiffness: 120 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 120 }}
                   className="space-y-12 lg:space-y-16"
                 >
                   {/* Header */}
-                  <div className="pb-6 lg:pb-8 border-b border-slate-200 dark:border-white/[0.04]">
+                  <div className="border-b border-slate-200 pb-6 dark:border-white/[0.04] lg:pb-8">
                     <div className="space-y-4 lg:space-y-5">
                       <div className="flex items-center gap-3 text-[var(--color-accent)]">
-                        <div className="w-2 h-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent)]"></div>
-                        <span className="text-[11px] font-black uppercase tracking-[0.25em]">Détails de l&apos;archive</span>
+                        <div className="h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent)]"></div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.25em]">
+                          Détails de l&apos;archive
+                        </span>
                       </div>
-                      <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.2] line-clamp-2">
+                      <h2 className="line-clamp-2 text-2xl font-bold leading-[1.2] tracking-tight text-slate-900 dark:text-white lg:text-3xl">
                         {selected.brief || 'Roast de draft'}
                       </h2>
-                      <div className="flex items-center gap-4 lg:gap-6 text-slate-500 dark:text-slate-400 text-[11px] font-black uppercase tracking-[0.15em]">
+                      <div className="flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 lg:gap-6">
                         <div className="flex items-center gap-2 text-[var(--color-accent)]">
-                          <div className="w-4 h-4 bg-[var(--color-accent)]/10 rounded flex items-center justify-center">
-                            <div className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full"></div>
+                          <div className="bg-[var(--color-accent)]/10 flex h-4 w-4 items-center justify-center rounded">
+                            <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-accent)]"></div>
                           </div>
-                          {selected.mode === 'roast' ? 'Analyse & Roast' : selected.tone || 'Génération'}
+                          {selected.mode === 'roast'
+                            ? 'Analyse & Roast'
+                            : selected.tone || 'Génération'}
                         </div>
                         <span className="opacity-20">/</span>
                         <span>
-                          {new Date(selected.timestamp).toLocaleString('fr-FR', {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
+                          {new Date(selected.timestamp).toLocaleString(
+                            'fr-FR',
+                            {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric',
+                            }
+                          )}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col xl:flex-row gap-8 lg:gap-12 items-start pt-6 lg:pt-8">
+                  <div className="flex flex-col items-start gap-8 pt-6 lg:gap-12 lg:pt-8 xl:flex-row">
                     {/* Publication */}
-                    <div className="w-full xl:w-[500px] flex-shrink-0 relative group">
-                      <div className="absolute right-4 sm:right-6 top-4 sm:top-6 z-20">
+                    <div className="group relative w-full flex-shrink-0 xl:w-[500px]">
+                      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
                         <CopyButton text={selected.publication} />
                       </div>
                       <LinkedInPost content={selected.publication} />
                     </div>
 
                     {/* Note */}
-                    <div className="flex-1 flex flex-col gap-8 w-full">
+                    <div className="flex w-full flex-1 flex-col gap-8">
                       {selected.note && (
                         <div className="space-y-4">
                           <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
-                            <div className="w-6 h-6 bg-[var(--color-accent)]/10 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
-                              <BespokeIcons.Sparkles className="w-4 h-4" />
+                            <div className="bg-[var(--color-accent)]/10 flex h-6 w-6 items-center justify-center rounded-lg text-[var(--color-accent)]">
+                              <BespokeIcons.Sparkles className="h-4 w-4" />
                             </div>
                             <h4 className="text-[11px] font-black uppercase tracking-[0.25em]">
                               Note Stratégique
                             </h4>
                           </div>
-                          <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] p-6 lg:p-8 text-sm lg:text-base text-slate-700 dark:text-slate-300 leading-relaxed italic font-serif relative group">
-                            <span className="absolute top-3 left-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&ldquo;</span>
+                          <div className="group relative rounded-[1.5rem] border border-slate-200 bg-slate-50 p-6 font-serif text-sm italic leading-relaxed text-slate-700 dark:border-white/[0.04] dark:bg-white/[0.01] dark:text-slate-300 lg:p-8 lg:text-base">
+                            <span className="absolute left-4 top-3 select-none font-serif text-3xl text-slate-200 dark:text-white/[0.03]">
+                              &ldquo;
+                            </span>
                             <span className="relative z-10 block">
                               {selected.note}
                             </span>
-                            <span className="absolute bottom-1 right-4 text-3xl text-slate-200 dark:text-white/[0.03] font-serif select-none">&rdquo;</span>
+                            <span className="absolute bottom-1 right-4 select-none font-serif text-3xl text-slate-200 dark:text-white/[0.03]">
+                              &rdquo;
+                            </span>
                           </div>
                         </div>
                       )}
@@ -239,11 +284,19 @@ export default function HistoryPage() {
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500"
                 >
-                  <div className="mb-8 relative w-24 h-24 flex items-center justify-center overflow-hidden opacity-80 transition-all duration-500">
-                    <img src="/logo-white.gif" alt="Forge Studio" className="w-full h-full object-contain dark:hidden" />
-                    <img src="/logo_no_bg.gif" alt="Forge Studio" className="w-full h-full object-contain hidden dark:block" />
+                  <div className="relative mb-8 flex h-24 w-24 items-center justify-center overflow-hidden opacity-80 transition-all duration-500">
+                    <img
+                      src="/logo-white.gif"
+                      alt="Forge Studio"
+                      className="h-full w-full object-contain dark:hidden"
+                    />
+                    <img
+                      src="/logo_no_bg.gif"
+                      alt="Forge Studio"
+                      className="hidden h-full w-full object-contain dark:block"
+                    />
                   </div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 translate-x-[0.2em]">
+                  <p className="translate-x-[0.2em] text-[11px] font-black uppercase tracking-[0.4em] text-slate-400">
                     Sélectionnez une archive…
                   </p>
                 </motion.div>

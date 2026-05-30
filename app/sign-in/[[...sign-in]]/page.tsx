@@ -5,11 +5,11 @@ import { motion } from 'framer-motion';
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[var(--color-bg)] relative overflow-hidden">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--color-bg)]">
       {/* Background decorative elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--color-accent)]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[var(--color-accent)]/3 rounded-full blur-3xl" />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="bg-[var(--color-accent)]/5 absolute -left-32 top-1/4 h-96 w-96 rounded-full blur-3xl" />
+        <div className="bg-[var(--color-accent)]/3 absolute -right-32 bottom-1/4 h-96 w-96 rounded-full blur-3xl" />
       </div>
 
       <motion.div
@@ -20,23 +20,23 @@ export default function SignInPage() {
       >
         {/* Logo + Brand */}
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 flex items-center justify-center overflow-hidden">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden">
             <img
               src="/logo-white.gif"
               alt="Forge Studio"
-              className="w-full h-full object-contain dark:hidden"
+              className="h-full w-full object-contain dark:hidden"
             />
             <img
               src="/logo_no_bg.gif"
               alt="Forge Studio"
-              className="w-full h-full object-contain hidden dark:block"
+              className="hidden h-full w-full object-contain dark:block"
             />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Forge Studio
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Connectez-vous pour accéder à votre atelier
             </p>
           </div>
@@ -46,7 +46,8 @@ export default function SignInPage() {
           appearance={{
             elements: {
               rootBox: 'w-full',
-              cardBox: 'shadow-xl border border-slate-200/50 dark:border-white/[0.05] rounded-3xl',
+              cardBox:
+                'shadow-xl border border-slate-200/50 dark:border-white/[0.05] rounded-3xl',
               card: 'bg-white dark:bg-[#1A1D27] rounded-3xl',
               headerTitle: 'text-slate-900 dark:text-white',
               headerSubtitle: 'text-slate-500 dark:text-slate-400',

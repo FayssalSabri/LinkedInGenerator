@@ -14,7 +14,12 @@ interface ResultProps {
   onImprove?: (feedback: string) => void;
 }
 
-export default function Result({ publication, note, isLoading, onImprove }: ResultProps) {
+export default function Result({
+  publication,
+  note,
+  isLoading,
+  onImprove,
+}: ResultProps) {
   const [feedback, setFeedback] = useState('');
 
   const handleImprove = () => {
@@ -24,7 +29,7 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
     }
   };
   return (
-    <div className="w-full flex-1 flex flex-col relative z-10 h-full">
+    <div className="relative z-10 flex h-full w-full flex-1 flex-col">
       <AnimatePresence mode="wait">
         {isLoading ? (
           <motion.div
@@ -32,35 +37,43 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="w-full flex flex-col items-center gap-8 lg:gap-10 mt-8 lg:mt-12"
+            className="mt-8 flex w-full flex-col items-center gap-8 lg:mt-12 lg:gap-10"
           >
             {/* Skeleton LinkedIn Post */}
-            <div className="bg-[var(--color-card)] border border-white/[0.05] w-full max-w-[550px] rounded-3xl overflow-hidden p-6 sm:p-8 space-y-6 shadow-2xl">
-              <div className="flex gap-4 items-center">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full skeleton-shimmer"></div>
-                <div className="space-y-3 flex-1">
-                  <div className="h-4 w-32 skeleton-shimmer"></div>
-                  <div className="h-3 w-48 skeleton-shimmer opacity-50"></div>
+            <div className="w-full max-w-[550px] space-y-6 overflow-hidden rounded-3xl border border-white/[0.05] bg-[var(--color-card)] p-6 shadow-2xl sm:p-8">
+              <div className="flex items-center gap-4">
+                <div className="skeleton-shimmer h-12 w-12 rounded-full sm:h-14 sm:w-14"></div>
+                <div className="flex-1 space-y-3">
+                  <div className="skeleton-shimmer h-4 w-32"></div>
+                  <div className="skeleton-shimmer h-3 w-48 opacity-50"></div>
                 </div>
               </div>
               <div className="space-y-3 pt-4">
-                <div className="h-4 w-full skeleton-shimmer"></div>
-                <div className="h-4 w-full skeleton-shimmer"></div>
-                <div className="h-4 w-[80%] skeleton-shimmer"></div>
+                <div className="skeleton-shimmer h-4 w-full"></div>
+                <div className="skeleton-shimmer h-4 w-full"></div>
+                <div className="skeleton-shimmer h-4 w-[80%]"></div>
               </div>
-              <div className="pt-10 flex justify-between gap-4">
-                <div className="h-10 w-1/4 skeleton-shimmer rounded-xl"></div>
-                <div className="h-10 w-1/4 skeleton-shimmer rounded-xl"></div>
-                <div className="h-10 w-1/4 skeleton-shimmer rounded-xl"></div>
+              <div className="flex justify-between gap-4 pt-10">
+                <div className="skeleton-shimmer h-10 w-1/4 rounded-xl"></div>
+                <div className="skeleton-shimmer h-10 w-1/4 rounded-xl"></div>
+                <div className="skeleton-shimmer h-10 w-1/4 rounded-xl"></div>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 text-[var(--color-accent)] bg-[var(--color-accent-subtle)] px-6 sm:px-8 py-3 sm:py-4 rounded-2xl border border-[var(--color-accent)]/10 backdrop-blur-sm">
-              <div className="relative w-8 h-8 flex items-center justify-center overflow-hidden">
-                <img src="/logo-white.gif" alt="Loading" className="w-full h-full object-contain animate-leap dark:hidden" />
-                <img src="/logo_no_bg.gif" alt="Loading" className="w-full h-full object-contain animate-leap hidden dark:block" />
+            <div className="border-[var(--color-accent)]/10 flex items-center gap-4 rounded-2xl border bg-[var(--color-accent-subtle)] px-6 py-3 text-[var(--color-accent)] backdrop-blur-sm sm:px-8 sm:py-4">
+              <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden">
+                <img
+                  src="/logo-white.gif"
+                  alt="Loading"
+                  className="animate-leap h-full w-full object-contain dark:hidden"
+                />
+                <img
+                  src="/logo_no_bg.gif"
+                  alt="Loading"
+                  className="animate-leap hidden h-full w-full object-contain dark:block"
+                />
               </div>
-              <span className="text-xs sm:text-sm font-bold tracking-widest uppercase">
+              <span className="text-xs font-bold uppercase tracking-widest sm:text-sm">
                 Forge en cours…
               </span>
             </div>
@@ -70,18 +83,20 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
             key="result"
             initial={{ opacity: 0, scale: 0.95, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: "spring", damping: 20, stiffness: 100 }}
-            className="w-full flex flex-col gap-8 lg:gap-10 items-center py-6 lg:py-10"
+            transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+            className="flex w-full flex-col items-center gap-8 py-6 lg:gap-10 lg:py-10"
           >
             {/* LinkedIn Mockup with Copy Button */}
-            <div className="w-full relative group max-w-[580px]">
-              <div className="absolute -inset-4 bg-gradient-to-tr from-[var(--color-accent)]/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
-              <div className="absolute right-4 sm:right-6 top-4 sm:top-6 z-20">
+            <div className="group relative w-full max-w-[580px]">
+              <div className="from-[var(--color-accent)]/10 absolute -inset-4 -z-10 bg-gradient-to-tr to-transparent opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"></div>
+              <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
                 <CopyButton text={publication} />
               </div>
               <LinkedInPost content={publication} shouldStream={true} />
-              <div className="absolute -bottom-6 right-2 text-xs font-medium text-slate-500 flex items-center gap-1.5 opacity-80">
-                <span className={`w-1.5 h-1.5 rounded-full ${publication.length > 1300 ? 'bg-red-500' : 'bg-emerald-500'}`}></span>
+              <div className="absolute -bottom-6 right-2 flex items-center gap-1.5 text-xs font-medium text-slate-500 opacity-80">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${publication.length > 1300 ? 'bg-red-500' : 'bg-emerald-500'}`}
+                ></span>
                 {publication.length} / 1300 caractères
               </div>
             </div>
@@ -90,27 +105,29 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
             {note && (
               <div className="w-full max-w-[550px] space-y-4 lg:space-y-6">
                 <div className="flex items-center gap-3 text-slate-500">
-                  <div className="w-6 h-6 bg-white/5 rounded-lg flex items-center justify-center text-[var(--color-accent)]">
-                    <BespokeIcons.Sparkles className="w-4 h-4" />
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/5 text-[var(--color-accent)]">
+                    <BespokeIcons.Sparkles className="h-4 w-4" />
                   </div>
-                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
                     Note d&apos;intention stratégique
                   </h3>
                 </div>
-                <div className="bg-white/[0.01] dark:bg-white/[0.01] bg-slate-50 border border-slate-200 dark:border-white/[0.04] rounded-[1.5rem] sm:rounded-[2.5rem] p-8 sm:p-12 text-base sm:text-xl text-slate-700 dark:text-slate-400 leading-relaxed italic font-serif relative group backdrop-blur-sm shadow-xl dark:shadow-2xl dark:shadow-black/20">
-                  <span className="absolute top-4 sm:top-6 left-6 sm:left-8 text-4xl sm:text-6xl text-slate-300 dark:text-white/[0.03] font-serif select-none">&ldquo;</span>
-                  <span className="relative z-10 block">
-                    {note}
+                <div className="group relative rounded-[1.5rem] border border-slate-200 bg-slate-50 bg-white/[0.01] p-8 font-serif text-base italic leading-relaxed text-slate-700 shadow-xl backdrop-blur-sm dark:border-white/[0.04] dark:bg-white/[0.01] dark:text-slate-400 dark:shadow-2xl dark:shadow-black/20 sm:rounded-[2.5rem] sm:p-12 sm:text-xl">
+                  <span className="absolute left-6 top-4 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:left-8 sm:top-6 sm:text-6xl">
+                    &ldquo;
                   </span>
-                  <span className="absolute bottom-2 sm:bottom-4 right-6 sm:right-8 text-4xl sm:text-6xl text-slate-300 dark:text-white/[0.03] font-serif select-none">&rdquo;</span>
+                  <span className="relative z-10 block">{note}</span>
+                  <span className="absolute bottom-2 right-6 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:bottom-4 sm:right-8 sm:text-6xl">
+                    &rdquo;
+                  </span>
                 </div>
               </div>
             )}
 
             {/* Improvement Feedback Box */}
             {publication && onImprove && (
-              <div className="w-full max-w-[550px] mt-4">
-                <div className="relative group">
+              <div className="mt-4 w-full max-w-[550px]">
+                <div className="group relative">
                   <input
                     type="text"
                     value={feedback}
@@ -122,36 +139,43 @@ export default function Result({ publication, note, isLoading, onImprove }: Resu
                       }
                     }}
                     placeholder="Ex: Rends ça plus percutant, Rends ça plus long, ajoute des emojis..."
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/[0.1] rounded-2xl py-3 pl-4 pr-12 text-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:border-transparent transition-all shadow-sm"
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-4 pr-12 text-sm text-slate-700 shadow-sm transition-all placeholder:text-slate-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] dark:border-white/[0.1] dark:bg-slate-900 dark:text-slate-300"
                     disabled={isLoading}
                   />
                   <button
                     onClick={handleImprove}
                     disabled={!feedback.trim() || isLoading}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-[var(--color-accent)] text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--color-accent-hover)] transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-[var(--color-accent)] p-2 text-white transition-colors hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="h-4 w-4" />
                   </button>
                 </div>
               </div>
             )}
-
           </motion.div>
         ) : (
           <motion.div
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col items-center justify-center text-center h-full opacity-100 transition-opacity duration-500"
+            className="flex h-full flex-1 flex-col items-center justify-center text-center opacity-100 transition-opacity duration-500"
           >
-            <div className="mb-6 relative w-20 h-20 flex items-center justify-center overflow-hidden opacity-80 transition-all duration-500">
-              <img src="/logo-white.gif" alt="Forge Studio" className="w-full h-full object-contain dark:hidden" />
-              <img src="/logo_no_bg.gif" alt="Forge Studio" className="w-full h-full object-contain hidden dark:block" />
+            <div className="relative mb-6 flex h-20 w-20 items-center justify-center overflow-hidden opacity-80 transition-all duration-500">
+              <img
+                src="/logo-white.gif"
+                alt="Forge Studio"
+                className="h-full w-full object-contain dark:hidden"
+              />
+              <img
+                src="/logo_no_bg.gif"
+                alt="Forge Studio"
+                className="hidden h-full w-full object-contain dark:block"
+              />
             </div>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
               En attente de configuration…
             </p>
-            <p className="text-[10px] text-slate-600 mt-2">
+            <p className="mt-2 text-[10px] text-slate-600">
               ⌘ + Entrée pour générer
             </p>
           </motion.div>

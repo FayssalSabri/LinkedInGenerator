@@ -5,152 +5,120 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Form from '@/components/Form';
 import Result from '@/components/Result';
 import Navbar from '@/components/Navbar';
-import { type GenerationParams, type GenerationResponse } from '@/lib/schemas';
+import { requestGeneration } from '@/lib/generateClient';
+import {
+  type FormGenerationParams,
+  type GenerationParams,
+  type GenerationResponse,
+} from '@/lib/schemas';
 import { toast } from 'sonner';
 
 export default function Home() {
   const [result, setResult] = useState<GenerationResponse | null>(null);
-  const [currentFormData, setCurrentFormData] = useState<GenerationParams | null>(null);
+  const [currentFormData, setCurrentFormData] =
+    useState<GenerationParams | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  /** Save generation to the database via API (auth-aware). */
-  const saveToDb = useCallback(async (params: GenerationParams, publication: string, note: string) => {
-    try {
-      await fetch('/api/history', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mode: params.mode,
-          description: params.description,
-          brief: params.brief,
-          tone: params.tone,
-          draft: params.draft,
-          publication,
-          note,
-        }),
-      });
-    } catch {
-      // Silently fail — history is non-critical
-      console.warn('[storage] Failed to save to database');
-    }
-  }, []);
-
-  const handleSubmit = useCallback(async (formData: GenerationParams) => {
-    // Cancel any in-flight request
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    setCurrentFormData(formData);
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-        signal: controller.signal,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Une erreur est survenue.');
+  const saveToDb = useCallback(
+    async (params: GenerationParams, publication: string, note: string) => {
+      try {
+        await fetch('/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: params.mode,
+            description: params.description,
+            brief: params.brief,
+            tone: params.tone,
+            draft: params.draft,
+            publication,
+            note,
+          }),
+        });
+      } catch {
+        console.warn('[history] Failed to save to database');
       }
+    },
+    []
+  );
 
-      setResult(data);
+  const runGeneration = useCallback(
+    async (params: GenerationParams, successMessage: string) => {
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      // Save to database (per-user, via Clerk auth)
-      saveToDb(formData, data.publication, data.note);
+      setCurrentFormData(params);
+      setIsLoading(true);
+      setError(null);
+      setResult(null);
 
-      toast.success('Publication générée avec succès');
-
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      const errorMsg = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.';
-      setError(errorMsg);
-      toast.error(errorMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [saveToDb]);
-
-  const handleImprove = useCallback(async (feedback: string) => {
-    if (!result?.publication || !currentFormData) return;
-    
-    const improveData: GenerationParams = {
-      ...currentFormData,
-      mode: 'improve',
-      draft: result.publication,
-      feedback: feedback
-    };
-
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(improveData),
-        signal: controller.signal,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Une erreur est survenue.');
+      try {
+        const data = await requestGeneration(params, controller.signal);
+        setResult(data);
+        saveToDb(params, data.publication, data.note);
+        toast.success(successMessage);
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        const errorMsg =
+          err instanceof Error
+            ? err.message
+            : 'Une erreur inattendue est survenue.';
+        setError(errorMsg);
+        toast.error(errorMsg);
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [saveToDb]
+  );
 
-      setResult(data);
+  const handleSubmit = useCallback(
+    (formData: FormGenerationParams) =>
+      runGeneration(formData, 'Publication générée avec succès'),
+    [runGeneration]
+  );
 
-      saveToDb(improveData, data.publication, data.note);
+  const handleImprove = useCallback(
+    async (feedback: string) => {
+      if (!result?.publication || !currentFormData) return;
 
-      toast.success('Publication améliorée avec succès');
+      const improveData: GenerationParams = {
+        ...currentFormData,
+        mode: 'improve',
+        draft: result.publication,
+        feedback,
+      };
 
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      const errorMsg = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.';
-      setError(errorMsg);
-      toast.error(errorMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [result, currentFormData, saveToDb]);
+      await runGeneration(improveData, 'Publication améliorée avec succès');
+    },
+    [result, currentFormData, runGeneration]
+  );
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[var(--color-bg)]">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-bg)]">
       <Navbar isAnimating={isLoading} />
 
-      {/* Main Workspace */}
-      <main className="flex-1 overflow-hidden w-full max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
-
-        {/* Left Column: Form */}
-        <div className="w-full lg:w-[40%] h-full flex flex-col overflow-hidden bg-slate-50/50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl p-6 lg:p-8 shadow-lg">
+      <main className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 overflow-hidden p-4 sm:p-6 lg:flex-row lg:gap-8 lg:p-8">
+        <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-slate-50/50 p-6 shadow-lg dark:border-white/[0.05] dark:bg-white/[0.02] lg:w-[40%] lg:p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col h-full"
+            className="flex h-full flex-col"
           >
-            <div className="mb-6 lg:mb-8 flex-shrink-0">
-              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3 tracking-tight">
+            <div className="mb-6 flex-shrink-0 lg:mb-8">
+              <h1 className="mb-3 text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                 Forge Studio
               </h1>
-              <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-md">
-                Configurez votre identité et votre message pour générer une publication LinkedIn à forte valeur ajoutée.
+              <p className="max-w-md text-sm font-medium leading-relaxed text-slate-500 dark:text-slate-400 sm:text-base">
+                Configurez votre identité et votre message pour générer une
+                publication LinkedIn à forte valeur ajoutée.
               </p>
             </div>
 
-            <div className="flex-1 flex flex-col">
+            <div className="flex flex-1 flex-col">
               <Form onSubmit={handleSubmit} isLoading={isLoading} />
               <AnimatePresence>
                 {error && (
@@ -158,10 +126,10 @@ export default function Home() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    className="mt-6 lg:mt-8 p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium rounded-2xl flex items-center gap-3"
+                    className="mt-6 flex items-center gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm font-medium text-red-600 dark:text-red-400 lg:mt-8"
                     role="alert"
                   >
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                    <div className="h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full bg-red-500" />
                     {error}
                   </motion.div>
                 )}
@@ -170,13 +138,16 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Right Column: Result / Preview */}
-        <div className="w-full lg:w-[60%] h-full flex flex-col overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center justify-start rounded-3xl lg:pl-6">
-            <Result publication={result?.publication} note={result?.note} isLoading={isLoading} onImprove={handleImprove} />
+        <div className="relative flex h-full w-full flex-col overflow-hidden lg:w-[60%]">
+          <div className="custom-scrollbar flex flex-1 flex-col items-center justify-start overflow-y-auto rounded-3xl lg:pl-6">
+            <Result
+              publication={result?.publication}
+              note={result?.note}
+              isLoading={isLoading}
+              onImprove={handleImprove}
+            />
           </div>
         </div>
-
       </main>
     </div>
   );

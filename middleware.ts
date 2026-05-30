@@ -1,14 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 /**
- * Clerk Middleware — protects all routes except the public ones.
- * Sign-in/sign-up pages and API generate endpoint remain public.
+ * Clerk Middleware — protects all routes except sign-in/sign-up.
+ * API routes enforce auth in route handlers (generate, history).
  */
-const isPublicRoute = createRouteMatcher([
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/generate(.*)',
-]);
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
