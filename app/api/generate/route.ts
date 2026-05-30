@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getCachedResponse, setCachedResponse } from '@/lib/cache';
-import { completeGeneration, extractJsonObject, GroqApiError } from '@/lib/groq';
+import {
+  completeGeneration,
+  extractJsonObject,
+  GroqApiError,
+} from '@/lib/groq';
 import { generationSchema, responseSchema } from '@/lib/schemas';
 import { checkRateLimit } from '@/lib/rateLimit';
 
@@ -70,7 +74,9 @@ export async function POST(req: Request) {
     } catch (error) {
       if (error instanceof GroqApiError) {
         return NextResponse.json(
-          { error: "L'IA est temporairement indisponible. Veuillez réessayer." },
+          {
+            error: "L'IA est temporairement indisponible. Veuillez réessayer.",
+          },
           { status: 503 }
         );
       }
