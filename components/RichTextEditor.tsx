@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect } from 'react';
 
 interface RichTextEditorProps {
@@ -11,7 +11,11 @@ interface RichTextEditorProps {
   editable?: boolean;
 }
 
-export function RichTextEditor({ content, onChange, editable = true }: RichTextEditorProps) {
+export function RichTextEditor({
+  content,
+  onChange,
+  editable = true,
+}: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -26,7 +30,8 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base dark:prose-invert max-w-none focus:outline-none min-h-[150px] p-4 text-slate-800 dark:text-slate-200',
+        class:
+          'prose prose-sm sm:prose-base dark:prose-invert max-w-none focus:outline-none min-h-[150px] p-4 text-slate-800 dark:text-slate-200',
       },
     },
   });
@@ -43,14 +48,14 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
   }
 
   return (
-    <div className="w-full bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-xl overflow-hidden focus-within:border-[var(--color-accent)]/50 transition-colors">
+    <div className="focus-within:border-[var(--color-accent)]/50 w-full overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors dark:border-white/[0.05] dark:bg-white/[0.02]">
       {editable && (
-        <div className="flex flex-wrap gap-2 p-2 border-b border-slate-200 dark:border-white/[0.05] bg-slate-50 dark:bg-black/20">
+        <div className="flex flex-wrap gap-2 border-b border-slate-200 bg-slate-50 p-2 dark:border-white/[0.05] dark:bg-black/20">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
             disabled={!editor.can().chain().focus().toggleBold().run()}
-            className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-xs font-bold ${editor.isActive('bold') ? 'bg-slate-200 dark:bg-white/10 text-[var(--color-accent)]' : ''}`}
+            className={`rounded p-1.5 text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/10 ${editor.isActive('bold') ? 'bg-slate-200 text-[var(--color-accent)] dark:bg-white/10' : ''}`}
           >
             B
           </button>
@@ -58,7 +63,7 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             disabled={!editor.can().chain().focus().toggleItalic().run()}
-            className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-xs italic ${editor.isActive('italic') ? 'bg-slate-200 dark:bg-white/10 text-[var(--color-accent)]' : ''}`}
+            className={`rounded p-1.5 text-xs italic hover:bg-slate-200 dark:hover:bg-white/10 ${editor.isActive('italic') ? 'bg-slate-200 text-[var(--color-accent)] dark:bg-white/10' : ''}`}
           >
             I
           </button>
@@ -66,22 +71,22 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             disabled={!editor.can().chain().focus().toggleStrike().run()}
-            className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-xs line-through ${editor.isActive('strike') ? 'bg-slate-200 dark:bg-white/10 text-[var(--color-accent)]' : ''}`}
+            className={`rounded p-1.5 text-xs line-through hover:bg-slate-200 dark:hover:bg-white/10 ${editor.isActive('strike') ? 'bg-slate-200 text-[var(--color-accent)] dark:bg-white/10' : ''}`}
           >
             S
           </button>
-          <div className="w-[1px] h-6 bg-slate-300 dark:bg-white/10 mx-1 self-center" />
+          <div className="mx-1 h-6 w-[1px] self-center bg-slate-300 dark:bg-white/10" />
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-xs ${editor.isActive('bulletList') ? 'bg-slate-200 dark:bg-white/10 text-[var(--color-accent)]' : ''}`}
+            className={`rounded p-1.5 text-xs hover:bg-slate-200 dark:hover:bg-white/10 ${editor.isActive('bulletList') ? 'bg-slate-200 text-[var(--color-accent)] dark:bg-white/10' : ''}`}
           >
             • Liste
           </button>
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`p-1.5 rounded hover:bg-slate-200 dark:hover:bg-white/10 text-xs ${editor.isActive('orderedList') ? 'bg-slate-200 dark:bg-white/10 text-[var(--color-accent)]' : ''}`}
+            className={`rounded p-1.5 text-xs hover:bg-slate-200 dark:hover:bg-white/10 ${editor.isActive('orderedList') ? 'bg-slate-200 text-[var(--color-accent)] dark:bg-white/10' : ''}`}
           >
             1. Liste
           </button>
@@ -89,5 +94,5 @@ export function RichTextEditor({ content, onChange, editable = true }: RichTextE
       )}
       <EditorContent editor={editor} />
     </div>
-  )
+  );
 }

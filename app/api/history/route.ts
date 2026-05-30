@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/db';
+import { historyCreateSchema } from '@/lib/schemas';
 
 /**
  * GET /api/history
@@ -40,24 +41,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { mode, description, brief, tone, draft, publication, note } = body;
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'JSON invalide.' }, { status: 400 });
+    }
 
-    if (!publication || !note) {
+    const validation = historyCreateSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Publication et note sont requis.' },
+        { error: validation.error.issues[0].message },
         { status: 400 }
       );
     }
 
+    const { mode, description, brief, tone, draft, publication, note } =
+      validation.data;
+
     const item = await prisma.historyItem.create({
       data: {
         userId,
-        mode: mode || null,
-        description: description || null,
-        brief: brief || null,
-        tone: tone || null,
-        draft: draft || null,
+        mode: mode ?? null,
+        description: description ?? null,
+        brief: brief ?? null,
+        tone: tone ?? null,
+        draft: draft ?? null,
         publication,
         note,
       },

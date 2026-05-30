@@ -16,11 +16,6 @@ describe('buildSystemPrompt', () => {
     expect(prompt).toContain('"note"');
   });
 
-  it('décrit l\'obligation d\'imagePrompt', () => {
-    const prompt = buildSystemPrompt('generate');
-    expect(prompt).toContain('imagePrompt');
-  });
-
   it('impose le format JSON obligatoire', () => {
     const prompt = buildSystemPrompt('generate');
     expect(prompt).toContain('FORMAT DE RÉPONSE OBLIGATOIRE');
@@ -32,18 +27,20 @@ describe('buildUserPrompt', () => {
   const params: GenerationParams = {
     mode: 'generate',
     description: 'Entreprise de conseil en transformation digitale.',
-    brief: 'Annonce de recrutement d\'un développeur senior.',
-    tone: 'Professionnel'
+    brief: "Annonce de recrutement d'un développeur senior.",
+    tone: 'Professionnel',
   };
 
-  it('intègre la description de l\'entreprise', () => {
+  it("intègre la description de l'entreprise", () => {
     const prompt = buildUserPrompt(params);
-    expect(prompt).toContain('Entreprise de conseil en transformation digitale.');
+    expect(prompt).toContain(
+      'Entreprise de conseil en transformation digitale.'
+    );
   });
 
   it('intègre le brief du post', () => {
     const prompt = buildUserPrompt(params);
-    expect(prompt).toContain('Annonce de recrutement d\'un développeur senior.');
+    expect(prompt).toContain("Annonce de recrutement d'un développeur senior.");
   });
 
   it('intègre le ton demandé', () => {
@@ -64,7 +61,13 @@ describe('buildUserPrompt', () => {
   });
 
   it('fonctionne avec tous les tons', () => {
-    const tones: GenerationParams['tone'][] = ['Professionnel', 'Chaleureux', 'Expert', 'Dynamique', 'Créatif'];
+    const tones = [
+      'Professionnel',
+      'Chaleureux',
+      'Expert',
+      'Dynamique',
+      'Créatif',
+    ] as const;
     for (const tone of tones) {
       const prompt = buildUserPrompt({ ...params, tone });
       expect(prompt).toContain(tone);

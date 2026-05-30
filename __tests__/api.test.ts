@@ -1,23 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '../app/api/generate/route';
 
-// Mocks
 const mockFetch = vi.fn();
 globalThis.fetch = mockFetch;
 
-vi.mock('../lib/rateLimit', () => ({
-  isRateLimited: vi.fn(),
-  getRemainingRequests: vi.fn(() => 9),
+vi.mock('@clerk/nextjs/server', () => ({
+  auth: vi.fn(async () => ({ userId: 'test-user' })),
 }));
 
-vi.mock('next/headers', () => ({
-  headers: vi.fn(() => new Map([['x-forwarded-for', '127.0.0.1']])),
+vi.mock('../lib/rateLimit', () => ({
+  checkRateLimit: vi.fn(async () => ({ limited: false, remaining: 9 })),
+}));
+
+vi.mock('../lib/cache', () => ({
+  getCachedResponse: vi.fn(async () => null),
+  setCachedResponse: vi.fn(async () => undefined),
 }));
 
 describe('POST /api/generate', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.GROQ_API_KEY = 'test-key';
+  });
+
+  it("retourne 401 si l'utilisateur n'est pas authentifié", async () => {
+    const { auth } = await import('@clerk/nextjs/server');
+    vi.mocked(auth).mockResolvedValueOnce({ userId: null } as never);
+
+    const req = new Request('http://localhost:3000/api/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        mode: 'generate',
+        description: 'Une entreprise valide.',
+        brief: 'Test brief.',
+        tone: 'Expert',
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(401);
   });
 
   it('retourne 400 si le body est vide ou invalide', async () => {
@@ -32,7 +52,12 @@ describe('POST /api/generate', () => {
   it('retourne 400 si la description est trop courte', async () => {
     const req = new Request('http://localhost:3000/api/generate', {
       method: 'POST',
-      body: JSON.stringify({ description: 'A', brief: 'test', tone: 'Expert' }),
+      body: JSON.stringify({
+        mode: 'generate',
+        description: 'Court',
+        brief: 'Brief valide.',
+        tone: 'Expert',
+      }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -43,9 +68,10 @@ describe('POST /api/generate', () => {
     const req = new Request('http://localhost:3000/api/generate', {
       method: 'POST',
       body: JSON.stringify({
+        mode: 'generate',
         description: 'Une entreprise valide.',
         brief: 'Test brief.',
-        tone: 'Expert'
+        tone: 'Expert',
       }),
     });
     const res = await POST(req);
@@ -54,14 +80,18 @@ describe('POST /api/generate', () => {
 
   it('retourne 429 si la limite de requêtes est atteinte', async () => {
     const rateLimit = await import('../lib/rateLimit');
-    vi.mocked(rateLimit.isRateLimited).mockReturnValueOnce(true);
+    vi.mocked(rateLimit.checkRateLimit).mockResolvedValueOnce({
+      limited: true,
+      remaining: 0,
+    });
 
     const req = new Request('http://localhost:3000/api/generate', {
       method: 'POST',
       body: JSON.stringify({
+        mode: 'generate',
         description: 'Une entreprise valide.',
         brief: 'Test brief.',
-        tone: 'Expert'
+        tone: 'Expert',
       }),
     });
     const res = await POST(req);
@@ -69,35 +99,35 @@ describe('POST /api/generate', () => {
     expect(res.headers.get('Retry-After')).toBe('60');
   });
 
-  it('appelle l\'API Groq et retourne la réponse valide', async () => {
-    const rateLimit = await import('../lib/rateLimit');
-    vi.mocked(rateLimit.isRateLimited).mockReturnValueOnce(false);
-
+  it("appelle l'API Groq et retourne la réponse valide", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
-        choices: [{
-          message: {
-            content: JSON.stringify({
-              publication: '🚀 Post valide.',
-              note: 'Note valide.'
-            })
-          }
-        }]
-      })
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                publication: '🚀 Post valide.',
+                note: 'Note valide.',
+              }),
+            },
+          },
+        ],
+      }),
     });
 
     const req = new Request('http://localhost:3000/api/generate', {
       method: 'POST',
       body: JSON.stringify({
+        mode: 'generate',
         description: 'Une entreprise valide.',
         brief: 'Test brief.',
-        tone: 'Expert'
+        tone: 'Expert',
       }),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
-    
+
     const data = await res.json();
     expect(data.publication).toBe('🚀 Post valide.');
     expect(data.note).toBe('Note valide.');

@@ -8,28 +8,26 @@ interface TypewriterProps {
   onComplete?: () => void;
 }
 
-export default function Typewriter({ text, speed = 10, onComplete }: TypewriterProps) {
-  const [displayedText, setDisplayedText] = useState('');
+export default function Typewriter({
+  text,
+  speed = 10,
+  onComplete,
+}: TypewriterProps) {
   const [index, setIndex] = useState(0);
+  const displayedText = text.slice(0, index);
 
   useEffect(() => {
-    // Reset when text changes
-    setDisplayedText('');
-    setIndex(0);
-  }, [text]);
-
-  useEffect(() => {
-    if (index < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText((prev) => prev + text[index]);
-        setIndex((prev) => prev + 1);
-      }, speed);
-
-      return () => clearTimeout(timeout);
-    } else if (onComplete) {
-      onComplete();
+    if (index >= text.length) {
+      onComplete?.();
+      return;
     }
-  }, [index, text, speed, onComplete]);
+
+    const timeout = setTimeout(() => {
+      setIndex((prev) => prev + 1);
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [index, text, speed, onComplete, text.length]);
 
   return <>{displayedText}</>;
 }

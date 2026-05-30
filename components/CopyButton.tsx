@@ -18,15 +18,19 @@ export default function CopyButton({ text, className = '' }: CopyButtonProps) {
   return (
     <button
       onClick={() => copy(text)}
-      className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-500 shadow-lg ${
+      className={`flex h-10 w-10 items-center justify-center rounded-xl shadow-lg transition-all duration-500 ${
         copied
           ? 'bg-green-500 text-white'
-          : 'bg-black/5 dark:bg-white/10 text-slate-500 dark:text-white/50 hover:bg-[var(--color-accent)] hover:text-white backdrop-blur-md border border-black/5 dark:border-white/10'
+          : 'border border-black/5 bg-black/5 text-slate-500 backdrop-blur-md hover:bg-[var(--color-accent)] hover:text-white dark:border-white/10 dark:bg-white/10 dark:text-white/50'
       } ${className}`}
       title="Copier le texte"
       aria-label={copied ? 'Texte copié' : 'Copier le texte'}
     >
-      {copied ? <Check className="w-5 h-5" strokeWidth={3} /> : <Copy className="w-5 h-5" />}
+      {copied ? (
+        <Check className="h-5 w-5" strokeWidth={3} />
+      ) : (
+        <Copy className="h-5 w-5" />
+      )}
     </button>
   );
 }
