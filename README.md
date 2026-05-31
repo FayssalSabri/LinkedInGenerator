@@ -43,8 +43,38 @@ _Historique des générations (par utilisateur)_
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    subgraph Frontend [Client Layer]
+        Client[Next.js App Router]
+    end
+
+    subgraph API [API Layer]
+        GenAPI[POST /api/generate]
+        HistAPI[POST /api/history]
+    end
+
+    subgraph External [External Services]
+        Clerk[Clerk Auth]
+        Groq[Groq Llama 3.3]
+    end
+
+    subgraph Data [Data Layer]
+        Redis[(Upstash Redis)]
+        DB[(PostgreSQL)]
+    end
+
+    Client -.->|Authenticates| Clerk
+    Client ==>|1. Request Generation| GenAPI
+
+    GenAPI -.->|2. Cache & Rate Limit| Redis
+    GenAPI -->|3. AI Prompt| Groq
+
+    Client ==>|4. Save Result| HistAPI
+    HistAPI -->|5. Persist Data| DB
 ```
-├── app/
+
+```
 │   ├── api/generate/     # Génération IA (auth Clerk, rate limit, cache, Zod)
 │   ├── api/history/      # CRUD historique utilisateur
 │   ├── history/          # Page bibliothèque
