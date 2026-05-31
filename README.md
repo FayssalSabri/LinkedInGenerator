@@ -74,7 +74,8 @@ flowchart TD
     HistAPI -->|5. Persist Data| DB
 ```
 
-```
+```text
+├── app/
 │   ├── api/generate/     # Génération IA (auth Clerk, rate limit, cache, Zod)
 │   ├── api/history/      # CRUD historique utilisateur
 │   ├── history/          # Page bibliothèque
