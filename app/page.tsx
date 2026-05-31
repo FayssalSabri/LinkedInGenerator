@@ -58,7 +58,9 @@ export default function Home() {
       // Scroll to result on mobile
       if (typeof window !== 'undefined' && window.innerWidth < 1024) {
         setTimeout(() => {
-          document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' });
+          document
+            .getElementById('result-section')
+            ?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
 
@@ -145,8 +147,11 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div id="result-section" className="relative flex w-full flex-col lg:h-full lg:w-[60%] lg:overflow-hidden">
-          <div className="custom-scrollbar flex flex-1 flex-col items-center justify-start rounded-3xl pb-10 lg:overflow-y-auto lg:pl-6 lg:pb-0">
+        <div
+          id="result-section"
+          className="relative flex w-full flex-col lg:h-full lg:w-[60%] lg:overflow-hidden"
+        >
+          <div className="custom-scrollbar flex flex-1 flex-col items-center justify-start rounded-3xl pb-10 lg:overflow-y-auto lg:pb-0 lg:pl-6">
             <Result
               publication={result?.publication}
               note={result?.note}
