@@ -43,8 +43,19 @@ _Historique des générations (par utilisateur)_
 
 ## Architecture
 
+```mermaid
+graph TD
+  subgraph architecture [Production-hardened]
+    Client2[Client] --> Clerk2[Clerk]
+    Client2 -->|authenticated| Gen2[Generate API]
+    Gen2 --> Redis[(Redis / Upstash)]
+    Gen2 --> Groq2[Groq]
+    Gen2 --> History2[History API]
+    History2 --> DB2[(Postgres)]
+  end
 ```
-├── app/
+
+```
 │   ├── api/generate/     # Génération IA (auth Clerk, rate limit, cache, Zod)
 │   ├── api/history/      # CRUD historique utilisateur
 │   ├── history/          # Page bibliothèque
