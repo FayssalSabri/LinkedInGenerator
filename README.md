@@ -44,38 +44,34 @@ _Historique des générations (par utilisateur)_
 ## Architecture
 
 ```mermaid
-flowchart TB
-    %% Definitions
-    Client("Client (Next.js App Router)")
-    Clerk("Clerk Auth")
-    GenAPI("Generate API (/api/generate)")
-    HistAPI("History API (/api/history)")
-    Groq("Groq (Llama 3.3 70B)")
-    Redis[("Redis (Upstash)")]
-    DB[("PostgreSQL (Prisma)")]
+flowchart TD
+    subgraph Frontend [Client Layer]
+        Client[Next.js App Router]
+    end
 
-    %% Client Interactions
-    Client -- "Authenticates" --> Clerk
-    Client -- "1. Requests Generation" --> GenAPI
+    subgraph API [API Layer]
+        GenAPI[POST /api/generate]
+        HistAPI[POST /api/history]
+    end
+
+    subgraph External [External Services]
+        Clerk[Clerk Auth]
+        Groq[Groq Llama 3.3]
+    end
+
+    subgraph Data [Data Layer]
+        Redis[(Upstash Redis)]
+        DB[(PostgreSQL)]
+    end
+
+    Client -.->|Authenticates| Clerk
+    Client ==>|1. Request Generation| GenAPI
     
-    %% Generate API Logic
-    GenAPI -- "2. Rate limits & Caches" --> Redis
-    GenAPI -- "3. Prompts AI" --> Groq
+    GenAPI -.->|2. Cache & Rate Limit| Redis
+    GenAPI -->|3. AI Prompt| Groq
     
-    %% History Logic
-    Client -- "4. Saves Result" --> HistAPI
-    HistAPI -- "5. Persists Data" --> DB
-
-    %% Styling
-    classDef client fill:#0ea5e9,stroke:#0284c7,color:#fff,stroke-width:2px,rx:8,ry:8
-    classDef api fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px,rx:8,ry:8
-    classDef external fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px,rx:8,ry:8
-    classDef db fill:#6366f1,stroke:#4f46e5,color:#fff,stroke-width:2px
-
-    class Client client
-    class GenAPI,HistAPI api
-    class Clerk,Groq external
-    class Redis,DB db
+    Client ==>|4. Save Result| HistAPI
+    HistAPI -->|5. Persist Data| DB
 ```
 
 ```
