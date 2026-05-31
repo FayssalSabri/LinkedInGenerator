@@ -66,10 +66,10 @@ flowchart TD
 
     Client -.->|Authenticates| Clerk
     Client ==>|1. Request Generation| GenAPI
-    
+
     GenAPI -.->|2. Cache & Rate Limit| Redis
     GenAPI -->|3. AI Prompt| Groq
-    
+
     Client ==>|4. Save Result| HistAPI
     HistAPI -->|5. Persist Data| DB
 ```
