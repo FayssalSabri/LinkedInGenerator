@@ -55,6 +55,15 @@ export default function Home() {
       setError(null);
       setResult(null);
 
+      // Scroll to result on mobile
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setTimeout(() => {
+          document
+            .getElementById('result-section')
+            ?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+
       try {
         const data = await requestGeneration(params, controller.signal);
         setResult(data);
@@ -98,11 +107,11 @@ export default function Home() {
   );
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-bg)]">
+    <div className="flex min-h-[100dvh] w-screen flex-col overflow-x-hidden bg-[var(--color-bg)] lg:h-screen lg:overflow-hidden">
       <Navbar isAnimating={isLoading} />
 
-      <main className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 overflow-hidden p-4 sm:p-6 lg:flex-row lg:gap-8 lg:p-8">
-        <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-slate-50/50 p-6 shadow-lg dark:border-white/[0.05] dark:bg-white/[0.02] lg:w-[40%] lg:p-8">
+      <main className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 p-4 sm:p-6 lg:flex-row lg:gap-8 lg:overflow-hidden lg:p-8">
+        <div className="flex w-full flex-col rounded-3xl border border-slate-200 bg-slate-50/50 p-6 shadow-lg dark:border-white/[0.05] dark:bg-white/[0.02] lg:h-full lg:w-[40%] lg:overflow-hidden lg:p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -138,8 +147,11 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="relative flex h-full w-full flex-col overflow-hidden lg:w-[60%]">
-          <div className="custom-scrollbar flex flex-1 flex-col items-center justify-start overflow-y-auto rounded-3xl lg:pl-6">
+        <div
+          id="result-section"
+          className="relative flex w-full flex-col lg:h-full lg:w-[60%] lg:overflow-hidden"
+        >
+          <div className="custom-scrollbar flex flex-1 flex-col items-center justify-start rounded-3xl pb-10 lg:overflow-y-auto lg:pb-0 lg:pl-6">
             <Result
               publication={result?.publication}
               note={result?.note}

@@ -112,12 +112,12 @@ export default function Result({
                     Note d&apos;intention stratégique
                   </h3>
                 </div>
-                <div className="group relative rounded-[1.5rem] border border-slate-200 bg-slate-50 bg-white/[0.01] p-8 font-serif text-base italic leading-relaxed text-slate-700 shadow-xl backdrop-blur-sm dark:border-white/[0.04] dark:bg-white/[0.01] dark:text-slate-400 dark:shadow-2xl dark:shadow-black/20 sm:rounded-[2.5rem] sm:p-12 sm:text-xl">
-                  <span className="absolute left-6 top-4 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:left-8 sm:top-6 sm:text-6xl">
+                <div className="group relative rounded-[1.5rem] border border-slate-200 bg-slate-50 bg-white/[0.01] p-6 font-serif text-base italic leading-relaxed text-slate-700 shadow-xl backdrop-blur-sm dark:border-white/[0.04] dark:bg-white/[0.01] dark:text-slate-400 dark:shadow-2xl dark:shadow-black/20 sm:rounded-[2.5rem] sm:p-12 sm:text-xl">
+                  <span className="absolute left-4 top-2 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:left-8 sm:top-6 sm:text-6xl">
                     &ldquo;
                   </span>
                   <span className="relative z-10 block">{note}</span>
-                  <span className="absolute bottom-2 right-6 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:bottom-4 sm:right-8 sm:text-6xl">
+                  <span className="absolute bottom-0 right-4 select-none font-serif text-4xl text-slate-300 dark:text-white/[0.03] sm:bottom-4 sm:right-8 sm:text-6xl">
                     &rdquo;
                   </span>
                 </div>

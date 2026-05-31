@@ -6,7 +6,7 @@ import LinkedInPost from '@/components/LinkedInPost';
 import CopyButton from '@/components/CopyButton';
 import Navbar from '@/components/Navbar';
 import { BespokeIcons } from '@/components/BespokeIcons';
-import { Search, Loader2, Trash2 } from 'lucide-react';
+import { Search, Loader2, Trash2, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface DbHistoryItem {
@@ -91,7 +91,9 @@ export default function HistoryPage() {
 
       <main className="mx-auto flex w-full max-w-[1600px] flex-1 overflow-hidden">
         {/* Thread Sidebar */}
-        <div className="flex w-full flex-shrink-0 flex-col bg-transparent sm:mr-8 sm:w-[300px] lg:mr-16 lg:w-[340px]">
+        <div
+          className={`w-full flex-shrink-0 flex-col bg-transparent sm:mr-8 sm:flex sm:w-[300px] lg:mr-16 lg:w-[340px] ${selected ? 'hidden' : 'flex'}`}
+        >
           <div className="px-4 pb-6 pt-8 sm:px-8 lg:pb-10 lg:pt-16">
             <h2 className="mb-6 text-2xl font-bold tracking-tight text-slate-900 dark:text-white lg:mb-10 lg:text-3xl">
               Bibliothèque
@@ -193,8 +195,10 @@ export default function HistoryPage() {
         </div>
 
         {/* Content Viewer */}
-        <div className="hidden flex-1 flex-col items-center justify-center overflow-hidden sm:flex">
-          <div className="custom-scrollbar max-h-screen w-full max-w-[1200px] overflow-y-auto px-4 py-8 lg:px-12 lg:py-12">
+        <div
+          className={`flex-1 flex-col items-center justify-center overflow-hidden sm:flex ${selected ? 'flex' : 'hidden'}`}
+        >
+          <div className="custom-scrollbar max-h-[calc(100dvh-64px)] w-full max-w-[1200px] overflow-y-auto px-4 py-8 sm:max-h-screen lg:px-12 lg:py-12">
             <AnimatePresence mode="wait">
               {selected ? (
                 <motion.div
@@ -209,7 +213,14 @@ export default function HistoryPage() {
                   <div className="border-b border-slate-200 pb-6 dark:border-white/[0.04] lg:pb-8">
                     <div className="space-y-4 lg:space-y-5">
                       <div className="flex items-center gap-3 text-[var(--color-accent)]">
-                        <div className="h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent)]"></div>
+                        <button
+                          onClick={() => setSelected(null)}
+                          className="-ml-2 flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/[0.05] sm:hidden"
+                          aria-label="Retour à la liste"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <div className="hidden h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent)] sm:block"></div>
                         <span className="text-[11px] font-black uppercase tracking-[0.25em]">
                           Détails de l&apos;archive
                         </span>
