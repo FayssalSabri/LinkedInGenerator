@@ -86,6 +86,7 @@ export const historyCreateSchema = z.object({
   draft: z.string().max(2000).optional().nullable(),
   publication: z.string().min(1).max(1300),
   note: z.string().min(1).max(5000),
+  image: z.string().max(5000000).optional().nullable(),
 });
 
 export type HistoryCreateInput = z.infer<typeof historyCreateSchema>;

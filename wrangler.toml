@@ -1,0 +1,12 @@
+name = "linkedin-image-gen"
+main = "cf-worker-image.js"
+compatibility_date = "2024-12-01"
+
+# Bind to Cloudflare Workers AI
+[ai]
+binding = "AI"
+model = "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+
+# Environment variables (swap in your API keys here if using external service)
+# [env.production]
+# vars = { IMAGE_API_URL = "https://api.stability.ai/v1/generation/...", IMAGE_API_KEY = "sk_..." }

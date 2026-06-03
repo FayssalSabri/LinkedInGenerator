@@ -256,10 +256,8 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
           type="submit"
           disabled={isLoading}
           whileTap={isLoading ? {} : { scale: 0.92 }}
-          className={`flex h-12 w-full flex-shrink-0 items-center justify-center rounded-2xl transition-all duration-500 sm:h-14 ${
-            isLoading
-              ? 'cursor-not-allowed bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-600'
-              : 'bg-[var(--color-accent)] text-white shadow-[0_10px_30px_var(--color-accent-glow)] hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]'
+          className={`flex h-14 w-full flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--color-accent)] px-6 text-white shadow-[0_10px_30px_var(--color-accent-glow)] transition-all duration-500 ${
+            isLoading ? 'cursor-not-allowed opacity-80' : 'hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]'
           }`}
           aria-label={
             isLoading
@@ -271,23 +269,9 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
           title="⌘ + Entrée"
         >
           {isLoading ? (
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-6 w-6 items-center justify-center overflow-hidden">
-                <img
-                  src="/logo-white.gif"
-                  alt="Loading"
-                  className="animate-leap h-full w-full object-contain opacity-70 dark:hidden"
-                />
-                <img
-                  src="/logo_no_bg.gif"
-                  alt="Loading"
-                  className="animate-leap hidden h-full w-full object-contain opacity-70 dark:block"
-                />
-              </div>
-              <span className="font-semibold">
-                {mode === 'generate' ? 'Génération...' : 'Analyse en cours...'}
-              </span>
-            </div>
+            <span className="text-lg font-bold">
+              {mode === 'generate' ? 'Génération...' : 'Analyse en cours...'}
+            </span>
           ) : (
             <div className="flex items-center gap-2">
               {mode === 'generate' ? (

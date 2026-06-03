@@ -50,6 +50,7 @@ export default function RootLayout({
       <html
         lang="fr"
         className={`${inter.variable} ${jetbrainsMono.variable} overflow-x-hidden scroll-smooth`}
+        data-scroll-behavior="smooth"
         suppressHydrationWarning
       >
         <body className="overflow-x-hidden bg-[var(--color-bg)] font-sans text-slate-900 transition-colors duration-300">
