@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import LinkedInPost from './LinkedInPost';
-import CopyButton from './CopyButton';
 import { BespokeIcons } from './BespokeIcons';
 
 interface ResultProps {
@@ -12,6 +11,8 @@ interface ResultProps {
   note?: string;
   isLoading: boolean;
   onImprove?: (feedback: string) => void;
+  onSaveHistory?: (image?: string | null) => Promise<boolean>;
+  onImageGenerated?: (image: string) => void;
 }
 
 export default function Result({
@@ -19,8 +20,82 @@ export default function Result({
   note,
   isLoading,
   onImprove,
+  onSaveHistory,
+  onImageGenerated,
 }: ResultProps) {
   const [feedback, setFeedback] = useState('');
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const buildImagePrompt = (text: string) =>
+    `Create a clean, professional LinkedIn post hero image with a minimal layout, refined typography, and subtle business styling. Use a modern, polished color palette that matches the tone of the post. The image should feel premium and aligned with the following post context: ${text.slice(0, 220)}`;
+
+  async function generateImage(content: string) {
+    setImageError(null);
+    setImageLoading(true);
+    setImageSrc(null);
+
+    try {
+      const prompt = buildImagePrompt(content);
+      const res = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, size: '512x512' }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Erreur de génération d’image');
+      }
+
+      const data = await res.json();
+      const image = data.image ?? null;
+      setImageSrc(image);
+      if (image && onImageGenerated) {
+        onImageGenerated(image);
+      }
+    } catch (error) {
+      console.error(error);
+      setImageError('Impossible de générer l’image pour le moment.');
+    } finally {
+      setImageLoading(false);
+    }
+  }
+
+  const [prevPublication, setPrevPublication] = useState(publication);
+  if (publication !== prevPublication) {
+    setPrevPublication(publication);
+    setImageSrc(null);
+    setImageError(null);
+    setSaved(false);
+    setSaveError(null);
+  }
+
+  const [prevImageSrc, setPrevImageSrc] = useState(imageSrc);
+  if (imageSrc !== prevImageSrc) {
+    setPrevImageSrc(imageSrc);
+    setSaved(false);
+    setSaveError(null);
+  }
+
+  const handleSaveHistory = async () => {
+    if (!onSaveHistory || !imageSrc) return;
+
+    setSaveError(null);
+    setIsSaving(true);
+
+    const success = await onSaveHistory(imageSrc);
+    setIsSaving(false);
+
+    if (success) {
+      setSaved(true);
+    } else {
+      setSaveError('Impossible d’enregistrer l’historique. Réessayez.');
+    }
+  };
 
   const handleImprove = () => {
     if (feedback.trim() && onImprove) {
@@ -28,6 +103,7 @@ export default function Result({
       setFeedback('');
     }
   };
+
   return (
     <div className="relative z-10 flex h-full w-full flex-1 flex-col">
       <AnimatePresence mode="wait">
@@ -60,23 +136,16 @@ export default function Result({
               </div>
             </div>
 
-            <div className="border-[var(--color-accent)]/10 flex items-center gap-4 rounded-2xl border bg-[var(--color-accent-subtle)] px-6 py-3 text-[var(--color-accent)] backdrop-blur-sm sm:px-8 sm:py-4">
-              <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden">
-                <img
-                  src="/logo-white.gif"
-                  alt="Loading"
-                  className="animate-leap h-full w-full object-contain dark:hidden"
-                />
-                <img
-                  src="/logo_no_bg.gif"
-                  alt="Loading"
-                  className="animate-leap hidden h-full w-full object-contain dark:block"
-                />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-widest sm:text-sm">
-                Forge en cours…
-              </span>
-            </div>
+            <img
+              src="/logo-white.gif"
+              alt="Loading"
+              className="mx-auto h-14 w-14 object-contain dark:hidden"
+            />
+            <img
+              src="/logo_no_bg.gif"
+              alt="Loading"
+              className="mx-auto hidden h-14 w-14 object-contain dark:block"
+            />
           </motion.div>
         ) : publication ? (
           <motion.div
@@ -86,13 +155,15 @@ export default function Result({
             transition={{ type: 'spring', damping: 20, stiffness: 100 }}
             className="flex w-full flex-col items-center gap-8 py-6 lg:gap-10 lg:py-10"
           >
-            {/* LinkedIn Mockup with Copy Button */}
+            {/* LinkedIn Mockup */}
             <div className="group relative w-full max-w-[580px]">
               <div className="from-[var(--color-accent)]/10 absolute -inset-4 -z-10 bg-gradient-to-tr to-transparent opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"></div>
-              <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
-                <CopyButton text={publication} />
-              </div>
-              <LinkedInPost content={publication} shouldStream={true} />
+              <LinkedInPost
+                content={publication}
+                shouldStream={true}
+                image={imageSrc}
+                onRemoveImage={() => setImageSrc(null)}
+              />
               <div className="absolute -bottom-6 right-2 flex items-center gap-1.5 text-xs font-medium text-slate-500 opacity-80">
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${publication.length > 1300 ? 'bg-red-500' : 'bg-emerald-500'}`}
@@ -100,6 +171,64 @@ export default function Result({
                 {publication.length} / 1300 caractères
               </div>
             </div>
+
+            {imageSrc && onSaveHistory && (
+              <div className="mt-4 flex flex-col items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSaveHistory}
+                  disabled={isSaving || saved}
+                  className="inline-flex h-12 min-w-[220px] items-center justify-center rounded-full bg-[var(--color-accent)] px-5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0a5ad9] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSaving
+                    ? 'Enregistrement...'
+                    : saved
+                      ? 'Image enregistrée'
+                      : 'Enregistrer l’image'}
+                </button>
+                {saveError && (
+                  <p className="text-xs text-red-500">{saveError}</p>
+                )}
+              </div>
+            )}
+
+            {!imageSrc && (
+              <div className="mt-6 flex w-full justify-center">
+                <button
+                  type="button"
+                  onClick={() => generateImage(publication)}
+                  disabled={imageLoading}
+                  className={
+                    imageLoading
+                      ? 'inline-flex h-16 w-16 items-center justify-center rounded-full bg-transparent p-0 text-white transition disabled:cursor-not-allowed'
+                      : 'inline-flex h-10 min-w-[180px] items-center justify-center rounded-full bg-[var(--color-accent)] px-6 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0a5ad9] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500'
+                  }
+                >
+                  {imageLoading ? (
+                    <>
+                      <img
+                        src="/logo-white.gif"
+                        alt="Chargement"
+                        className="h-14 w-14 object-contain dark:hidden"
+                      />
+                      <img
+                        src="/logo_no_bg.gif"
+                        alt="Chargement"
+                        className="hidden h-14 w-14 object-contain dark:block"
+                      />
+                    </>
+                  ) : (
+                    'Générer l’image'
+                  )}
+                </button>
+              </div>
+            )}
+
+            {imageError && (
+              <div className="rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-950/20 dark:text-red-300">
+                {imageError}
+              </div>
+            )}
 
             {/* Strategic Note */}
             {note && (

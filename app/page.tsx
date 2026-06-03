@@ -19,29 +19,58 @@ export default function Home() {
     useState<GenerationParams | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyId, setHistoryId] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const saveToDb = useCallback(
-    async (params: GenerationParams, publication: string, note: string) => {
+  const saveToHistory = useCallback(
+    async (image?: string | null) => {
+      if (!currentFormData || !result) {
+        return false;
+      }
+
       try {
-        await fetch('/api/history', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mode: params.mode,
-            description: params.description,
-            brief: params.brief,
-            tone: params.tone,
-            draft: params.draft,
-            publication,
-            note,
-          }),
-        });
+        let res;
+        if (historyId) {
+          res = await fetch('/api/history', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: historyId,
+              image,
+            }),
+          });
+        } else {
+          res = await fetch('/api/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              mode: currentFormData.mode,
+              description: currentFormData.description,
+              brief: currentFormData.brief,
+              tone: currentFormData.tone,
+              draft: currentFormData.draft,
+              publication: result.publication,
+              note: result.note,
+              image,
+            }),
+          });
+          if (res.ok) {
+            const savedItem = await res.json();
+            setHistoryId(savedItem.id);
+          }
+        }
+
+        if (!res.ok) {
+          throw new Error('Impossible de sauvegarder l’historique.');
+        }
+
+        return true;
       } catch {
         console.warn('[history] Failed to save to database');
+        return false;
       }
     },
-    []
+    [currentFormData, result, historyId]
   );
 
   const runGeneration = useCallback(
@@ -67,8 +96,34 @@ export default function Home() {
       try {
         const data = await requestGeneration(params, controller.signal);
         setResult(data);
-        saveToDb(params, data.publication, data.note);
         toast.success(successMessage);
+
+        // Auto-save generated content to history
+        try {
+          const res = await fetch('/api/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              mode: params.mode,
+              description: params.description,
+              brief: params.brief,
+              tone: params.tone,
+              draft: params.draft,
+              publication: data.publication,
+              note: data.note,
+              image: null,
+            }),
+          });
+          if (res.ok) {
+            const savedItem = await res.json();
+            setHistoryId(savedItem.id);
+          } else {
+            setHistoryId(null);
+          }
+        } catch (e) {
+          console.warn('[history] Auto-save failed', e);
+          setHistoryId(null);
+        }
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') return;
         const errorMsg =
@@ -81,7 +136,7 @@ export default function Home() {
         setIsLoading(false);
       }
     },
-    [saveToDb]
+    []
   );
 
   const handleSubmit = useCallback(
@@ -157,6 +212,7 @@ export default function Home() {
               note={result?.note}
               isLoading={isLoading}
               onImprove={handleImprove}
+              onSaveHistory={saveToHistory}
             />
           </div>
         </div>

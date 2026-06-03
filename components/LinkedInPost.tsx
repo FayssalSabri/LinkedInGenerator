@@ -1,7 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe2 } from 'lucide-react';
+import {
+  ThumbsUp,
+  MessageSquare,
+  Repeat2,
+  Send,
+  Globe2,
+  X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Typewriter from './Typewriter';
 import { RichTextEditor } from './RichTextEditor';
@@ -9,6 +16,8 @@ import { RichTextEditor } from './RichTextEditor';
 interface LinkedInPostProps {
   content: string;
   shouldStream?: boolean;
+  image?: string | null; // data URL or remote URL
+  onRemoveImage?: () => void;
 }
 
 /**
@@ -18,6 +27,8 @@ interface LinkedInPostProps {
 export default function LinkedInPost({
   content,
   shouldStream = false,
+  image = null,
+  onRemoveImage,
 }: LinkedInPostProps) {
   return (
     <div className="group relative mx-auto w-full max-w-[550px] overflow-hidden rounded-xl border border-slate-200 bg-[var(--color-bg)] text-left shadow-sm dark:border-white/5 dark:shadow-none">
@@ -30,6 +41,7 @@ export default function LinkedInPost({
                 src="/avatar.png"
                 alt="Photo de profil"
                 fill
+                sizes="40px"
                 className="object-cover"
               />
             </div>
@@ -70,6 +82,29 @@ export default function LinkedInPost({
             )}
           </div>
         </div>
+
+        {/* Image (optional) */}
+        {image && (
+          <div className="px-4 pb-4">
+            <div className="relative mt-2 w-full overflow-hidden rounded-md">
+              {onRemoveImage && (
+                <button
+                  type="button"
+                  onClick={onRemoveImage}
+                  aria-label="Supprimer l'image"
+                  className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-slate-900/90 dark:text-slate-200"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <img
+                src={image}
+                alt="Suggested"
+                className="w-full rounded-md object-cover"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Engagement Stats */}
         <div className="flex items-center justify-between border-t border-slate-200 px-4 py-2 dark:border-white/5">
