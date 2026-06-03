@@ -257,7 +257,9 @@ export default function Form({ onSubmit, isLoading }: FormProps) {
           disabled={isLoading}
           whileTap={isLoading ? {} : { scale: 0.92 }}
           className={`flex h-14 w-full flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--color-accent)] px-6 text-white shadow-[0_10px_30px_var(--color-accent-glow)] transition-all duration-500 ${
-            isLoading ? 'cursor-not-allowed opacity-80' : 'hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]'
+            isLoading
+              ? 'cursor-not-allowed opacity-80'
+              : 'hover:scale-[1.02] hover:bg-[var(--color-accent-hover)]'
           }`}
           aria-label={
             isLoading

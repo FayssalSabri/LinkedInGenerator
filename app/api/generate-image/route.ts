@@ -39,7 +39,10 @@ export async function POST(req: Request) {
 
     const validation = bodySchema.safeParse(body);
     if (!validation.success) {
-      return NextResponse.json({ error: validation.error.issues[0].message }, { status: 400 });
+      return NextResponse.json(
+        { error: validation.error.issues[0].message },
+        { status: 400 }
+      );
     }
 
     const { prompt, size, options } = validation.data;
@@ -68,7 +71,10 @@ export async function POST(req: Request) {
       if (!accountId || !apiToken || !workerScript) {
         console.error('[API] Cloudflare worker configuration manquante');
         return NextResponse.json(
-          { error: 'Erreur de configuration serveur. Définir CF_IMAGE_WORKER_URL ou Cloudflare_Account_ID + Cloudflare_API_Token + CF_WORKER_SCRIPT_NAME.' },
+          {
+            error:
+              'Erreur de configuration serveur. Définir CF_IMAGE_WORKER_URL ou Cloudflare_Account_ID + Cloudflare_API_Token + CF_WORKER_SCRIPT_NAME.',
+          },
           { status: 500 }
         );
       }
@@ -85,10 +91,12 @@ export async function POST(req: Request) {
     }
 
     if (!cfRes.ok) {
-      const errText = await cfRes.text().catch(() => 'Erreur Cloudflare Worker');
+      const errText = await cfRes
+        .text()
+        .catch(() => 'Erreur Cloudflare Worker');
       console.error('[API] Cloudflare Worker error:', cfRes.status, errText);
       return NextResponse.json(
-        { error: 'Erreur lors de la génération d\'image.', details: errText },
+        { error: "Erreur lors de la génération d'image.", details: errText },
         { status: 502 }
       );
     }
@@ -112,6 +120,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ image: dataUrl, _rateRemaining: remaining });
   } catch (error) {
     console.error('[API] Erreur serveur (image):', error);
-    return NextResponse.json({ error: 'Erreur interne du serveur.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur.' },
+      { status: 500 }
+    );
   }
 }

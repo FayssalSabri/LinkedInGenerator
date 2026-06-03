@@ -1,9 +1,9 @@
 /**
  * Cloudflare Worker: LinkedIn Image Generator
- * 
+ *
  * Accepts: POST { prompt, size, options }
  * Returns: { b64 } or { imageUrl }
- * 
+ *
  * Deploys to: https://linkedin-image-gen.YOUR_SUBDOMAIN.workers.dev
  */
 
@@ -62,13 +62,18 @@ export default {
             size,
           });
         } else {
-          return new Response(JSON.stringify({ error: 'Cloudflare AI binding method unavailable' }), {
-            status: 501,
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            },
-          });
+          return new Response(
+            JSON.stringify({
+              error: 'Cloudflare AI binding method unavailable',
+            }),
+            {
+              status: 501,
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+              },
+            }
+          );
         }
 
         if (prompt === '__debug__') {
@@ -89,23 +94,41 @@ export default {
               generate: typeof env.AI?.generate,
             },
             responseType: response?.constructor?.name,
-            responseKeys: response && typeof response === 'object' ? Object.keys(response) : undefined,
-            outputType: response && response.output ? response.output.constructor?.name : undefined,
-            outputKeys: response && Array.isArray(response.output) && response.output[0] ? Object.keys(response.output[0]) : undefined,
+            responseKeys:
+              response && typeof response === 'object'
+                ? Object.keys(response)
+                : undefined,
+            outputType:
+              response && response.output
+                ? response.output.constructor?.name
+                : undefined,
+            outputKeys:
+              response && Array.isArray(response.output) && response.output[0]
+                ? Object.keys(response.output[0])
+                : undefined,
             responseTextSample,
           };
-          return new Response(JSON.stringify({ debug: meta, response: response?.toString?.() ?? null }), {
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            },
-          });
+          return new Response(
+            JSON.stringify({
+              debug: meta,
+              response: response?.toString?.() ?? null,
+            }),
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+              },
+            }
+          );
         }
 
         const logPayload = {
           type: typeof response,
           constructor: response?.constructor?.name,
-          keys: response && typeof response === 'object' ? Object.keys(response) : undefined,
+          keys:
+            response && typeof response === 'object'
+              ? Object.keys(response)
+              : undefined,
         };
         console.log('[Worker] AI response meta', JSON.stringify(logPayload));
 
@@ -113,22 +136,36 @@ export default {
         if (response instanceof Response) {
           if (!response.ok) {
             const errorText = await response.text();
-            return new Response(JSON.stringify({ error: 'AI generation failed', details: errorText }), {
-              status: 502,
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-              },
-            });
+            return new Response(
+              JSON.stringify({
+                error: 'AI generation failed',
+                details: errorText,
+              }),
+              {
+                status: 502,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Access-Control-Allow-Origin': '*',
+                },
+              }
+            );
           }
           buffer = await response.arrayBuffer();
         } else if (response instanceof ArrayBuffer) {
           buffer = response;
         } else if (response && typeof response.getReader === 'function') {
           buffer = await new Response(response).arrayBuffer();
-        } else if (response && typeof response === 'object' && typeof response.arrayBuffer === 'function') {
+        } else if (
+          response &&
+          typeof response === 'object' &&
+          typeof response.arrayBuffer === 'function'
+        ) {
           buffer = await response.arrayBuffer();
-        } else if (response && typeof response === 'object' && Array.isArray(response.output)) {
+        } else if (
+          response &&
+          typeof response === 'object' &&
+          Array.isArray(response.output)
+        ) {
           const output = response.output[0];
           if (output?.type === 'image' && typeof output?.content === 'string') {
             return new Response(JSON.stringify({ b64: output.content }), {
@@ -146,14 +183,22 @@ export default {
               },
             });
           }
-        } else if (response && typeof response === 'object' && typeof response.b64 === 'string') {
+        } else if (
+          response &&
+          typeof response === 'object' &&
+          typeof response.b64 === 'string'
+        ) {
           return new Response(JSON.stringify({ b64: response.b64 }), {
             headers: {
               'Content-Type': 'application/json',
               'Access-Control-Allow-Origin': '*',
             },
           });
-        } else if (response && typeof response === 'object' && typeof response.imageUrl === 'string') {
+        } else if (
+          response &&
+          typeof response === 'object' &&
+          typeof response.imageUrl === 'string'
+        ) {
           return new Response(JSON.stringify({ imageUrl: response.imageUrl }), {
             headers: {
               'Content-Type': 'application/json',
@@ -163,13 +208,19 @@ export default {
         }
 
         if (!buffer) {
-          return new Response(JSON.stringify({ error: 'Unexpected AI response format', details: logPayload }), {
-            status: 502,
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            },
-          });
+          return new Response(
+            JSON.stringify({
+              error: 'Unexpected AI response format',
+              details: logPayload,
+            }),
+            {
+              status: 502,
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+              },
+            }
+          );
         }
 
         const bytes = new Uint8Array(buffer);
@@ -191,18 +242,22 @@ export default {
         );
       }
 
-      return new Response(JSON.stringify({ error: 'Cloudflare AI binding unavailable' }), {
-        status: 501,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Cloudflare AI binding unavailable' }),
+        {
+          status: 501,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
+      );
 
       // Option 2: Call external API (e.g., Stability AI, OpenAI, HuggingFace)
       // Example using a hypothetical free image API
       // You can swap this for your preferred service with env variables
-      const imageApiUrl = env.IMAGE_API_URL || 'https://api.example.com/generate';
+      const imageApiUrl =
+        env.IMAGE_API_URL || 'https://api.example.com/generate';
       const imageApiKey = env.IMAGE_API_KEY || '';
 
       const externalRes = await fetch(imageApiUrl, {
@@ -239,16 +294,22 @@ export default {
         </text>
       </svg>`;
       const b64 = btoa(placeholderSvg);
-      return new Response(JSON.stringify({ b64: `data:image/svg+xml;base64,${b64}` }), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
+      return new Response(
+        JSON.stringify({ b64: `data:image/svg+xml;base64,${b64}` }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
+      );
     } catch (error) {
       console.error('[Worker] Error:', error);
       return new Response(
-        JSON.stringify({ error: 'Image generation failed', details: error.message }),
+        JSON.stringify({
+          error: 'Image generation failed',
+          details: error.message,
+        }),
         {
           status: 500,
           headers: {

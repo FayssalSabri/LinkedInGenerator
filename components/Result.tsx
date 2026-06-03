@@ -158,7 +158,12 @@ export default function Result({
             {/* LinkedIn Mockup */}
             <div className="group relative w-full max-w-[580px]">
               <div className="from-[var(--color-accent)]/10 absolute -inset-4 -z-10 bg-gradient-to-tr to-transparent opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"></div>
-              <LinkedInPost content={publication} shouldStream={true} image={imageSrc} onRemoveImage={() => setImageSrc(null)} />
+              <LinkedInPost
+                content={publication}
+                shouldStream={true}
+                image={imageSrc}
+                onRemoveImage={() => setImageSrc(null)}
+              />
               <div className="absolute -bottom-6 right-2 flex items-center gap-1.5 text-xs font-medium text-slate-500 opacity-80">
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${publication.length > 1300 ? 'bg-red-500' : 'bg-emerald-500'}`}
@@ -175,7 +180,11 @@ export default function Result({
                   disabled={isSaving || saved}
                   className="inline-flex h-12 min-w-[220px] items-center justify-center rounded-full bg-[var(--color-accent)] px-5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0a5ad9] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isSaving ? 'Enregistrement...' : saved ? 'Image enregistrée' : 'Enregistrer l’image'}
+                  {isSaving
+                    ? 'Enregistrement...'
+                    : saved
+                      ? 'Image enregistrée'
+                      : 'Enregistrer l’image'}
                 </button>
                 {saveError && (
                   <p className="text-xs text-red-500">{saveError}</p>
@@ -189,9 +198,10 @@ export default function Result({
                   type="button"
                   onClick={() => generateImage(publication)}
                   disabled={imageLoading}
-                  className={imageLoading ?
-                    'inline-flex h-16 w-16 items-center justify-center rounded-full bg-transparent p-0 text-white transition disabled:cursor-not-allowed' :
-                    'inline-flex h-10 min-w-[180px] items-center justify-center rounded-full bg-[var(--color-accent)] px-6 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0a5ad9] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500'
+                  className={
+                    imageLoading
+                      ? 'inline-flex h-16 w-16 items-center justify-center rounded-full bg-transparent p-0 text-white transition disabled:cursor-not-allowed'
+                      : 'inline-flex h-10 min-w-[180px] items-center justify-center rounded-full bg-[var(--color-accent)] px-6 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0a5ad9] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500'
                   }
                 >
                   {imageLoading ? (

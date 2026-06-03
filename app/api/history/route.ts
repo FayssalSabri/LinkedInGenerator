@@ -118,7 +118,10 @@ export async function PATCH(req: Request) {
     });
 
     if (updatedItem.count === 0) {
-      return NextResponse.json({ error: 'Élément introuvable.' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Élément introuvable.' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ success: true });
@@ -130,7 +133,6 @@ export async function PATCH(req: Request) {
     );
   }
 }
-
 
 /**
  * DELETE /api/history

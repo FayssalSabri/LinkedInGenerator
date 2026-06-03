@@ -1,7 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ThumbsUp, MessageSquare, Repeat2, Send, Globe2, X } from 'lucide-react';
+import {
+  ThumbsUp,
+  MessageSquare,
+  Repeat2,
+  Send,
+  Globe2,
+  X,
+} from 'lucide-react';
 import Image from 'next/image';
 import Typewriter from './Typewriter';
 import { RichTextEditor } from './RichTextEditor';
@@ -79,7 +86,7 @@ export default function LinkedInPost({
         {/* Image (optional) */}
         {image && (
           <div className="px-4 pb-4">
-            <div className="relative mt-2 w-full rounded-md overflow-hidden">
+            <div className="relative mt-2 w-full overflow-hidden rounded-md">
               {onRemoveImage && (
                 <button
                   type="button"
@@ -90,7 +97,11 @@ export default function LinkedInPost({
                   <X className="h-4 w-4" />
                 </button>
               )}
-              <img src={image} alt="Suggested" className="w-full rounded-md object-cover" />
+              <img
+                src={image}
+                alt="Suggested"
+                className="w-full rounded-md object-cover"
+              />
             </div>
           </div>
         )}
