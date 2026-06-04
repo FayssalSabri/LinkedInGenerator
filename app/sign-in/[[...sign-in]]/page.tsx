@@ -34,7 +34,7 @@ export default function SignInPage() {
       >
         <div className="w-full overflow-hidden rounded-3xl border border-slate-200/50 bg-white shadow-xl dark:border-white/[0.05] dark:bg-[#1A1D27]">
           {/* Custom Logo that won't be frozen by Clerk's image optimization */}
-          <div className="flex w-full justify-center pt-10 pb-2">
+          <div className="flex w-full justify-center pb-2 pt-10">
             <img
               src={logoUrl}
               alt="Forge Studio"
