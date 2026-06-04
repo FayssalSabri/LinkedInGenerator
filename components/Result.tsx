@@ -33,8 +33,10 @@ export default function Result({
 
   const buildImagePrompt = (text: string) => {
     const context = text.slice(0, 400);
-    const intention = note ? `The strategic intention of the post is: "${note}". ` : '';
-    
+    const intention = note
+      ? `The strategic intention of the post is: "${note}". `
+      : '';
+
     return `Create a clean, professional LinkedIn post hero image with a minimal layout, subtle business styling, and NO text. Use a modern, polished color palette. The image must visually represent the core subject. ${intention}Here is the post context: ${context}`;
   };
 
