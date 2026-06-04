@@ -2,8 +2,21 @@
 
 import { SignIn } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export default function SignInPage() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = resolvedTheme === 'dark';
+  // Use a default before mounting to avoid hydration mismatch
+  const logoUrl = mounted && isDark ? '/logo_no_bg.gif' : '/logo-white.gif';
+
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--color-bg)]">
       {/* Background decorative elements */}
@@ -18,34 +31,13 @@ export default function SignInPage() {
         transition={{ type: 'spring', damping: 25, stiffness: 120 }}
         className="relative z-10 flex flex-col items-center gap-8"
       >
-        {/* Logo + Brand */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden">
-            <img
-              src="/logo-white.gif"
-              alt="Forge Studio"
-              className="h-full w-full object-contain dark:hidden"
-            />
-            <img
-              src="/logo_no_bg.gif"
-              alt="Forge Studio"
-              className="hidden h-full w-full object-contain dark:block"
-            />
-          </div>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Forge Studio
-            </h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Connectez-vous pour accéder à votre atelier
-            </p>
-          </div>
-        </div>
-
         <SignIn
           appearance={{
+            layout: {
+              logoImageUrl: logoUrl,
+            },
             elements: {
-              logoBox: 'hidden',
+              logoImage: 'h-16 w-16 object-contain mx-auto',
               rootBox: 'w-full',
               cardBox:
                 'shadow-xl border border-slate-200/50 dark:border-white/[0.05] rounded-3xl',
