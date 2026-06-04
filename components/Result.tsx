@@ -31,8 +31,14 @@ export default function Result({
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  const buildImagePrompt = (text: string) =>
-    `Create a clean, professional LinkedIn post hero image with a minimal layout, refined typography, and subtle business styling. Use a modern, polished color palette that matches the tone of the post. The image should feel premium and aligned with the following post context: ${text.slice(0, 220)}`;
+  const buildImagePrompt = (text: string) => {
+    const context = text.slice(0, 400);
+    const intention = note
+      ? `The strategic intention of the post is: "${note}". `
+      : '';
+
+    return `Create a clean, professional LinkedIn post hero image with a minimal layout, subtle business styling, and NO text. Use a modern, polished color palette. The image must visually represent the core subject. ${intention}Here is the post context: ${context}`;
+  };
 
   async function generateImage(content: string) {
     setImageError(null);
