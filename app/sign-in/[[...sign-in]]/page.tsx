@@ -45,6 +45,7 @@ export default function SignInPage() {
         <SignIn
           appearance={{
             elements: {
+              logoBox: 'hidden',
               rootBox: 'w-full',
               cardBox:
                 'shadow-xl border border-slate-200/50 dark:border-white/[0.05] rounded-3xl',
