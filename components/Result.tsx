@@ -32,12 +32,13 @@ export default function Result({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const buildImagePrompt = (text: string) => {
-    const context = text.slice(0, 400);
-    const intention = note
-      ? `The strategic intention of the post is: "${note}". `
-      : '';
+    const rawSubject = note || text.split('\n')[0] || '';
+    const cleanSubject = rawSubject
+      .replace(/[^a-zA-Z0-9 àéèêçôî]/g, ' ')
+      .slice(0, 150)
+      .trim();
 
-    return `Create a clean, professional LinkedIn post hero image with a minimal layout, subtle business styling, and NO text. Use a modern, polished color palette. The image must visually represent the core subject. ${intention}Here is the post context: ${context}`;
+    return `A highly realistic, professional corporate photography representing: ${cleanSubject}. Cinematic lighting, shallow depth of field, modern business environment, shot on 35mm lens, 8k resolution, highly detailed, photorealistic, premium corporate aesthetic, NO text, NO letters, NO words.`;
   };
 
   async function generateImage(content: string) {
