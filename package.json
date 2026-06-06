@@ -23,7 +23,7 @@
     "@tiptap/extension-placeholder": "^3.23.6",
     "@tiptap/pm": "^3.23.6",
     "@tiptap/react": "^3.23.6",
-    "@tiptap/starter-kit": "^3.23.6",
+    "@tiptap/starter-kit": "^3.26.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.3",
     "clsx": "^2.1.1",
