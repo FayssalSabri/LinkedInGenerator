@@ -127,7 +127,7 @@ Dans votre terminal, lancez la synchronisation Prisma :
 docker compose exec app pnpm exec prisma db push
 ```
 
-L'application est maintenant disponible sur [http://localhost:3000](http://localhost:3000) ! 🎉
+L'application est maintenant disponible sur [http://localhost:3000](http://localhost:3000) !
 
 ## Démarrage Local (Classique / Sans Docker)
 
