@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     }
 
     const params = validation.data;
-    const cacheKey = JSON.stringify(params);
+    const cacheKey = JSON.stringify({ ...params, userId });
     const cachedResponse = await getCachedResponse(cacheKey);
     if (cachedResponse) {
       return NextResponse.json({ ...cachedResponse, _cached: true });

@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/db';
 import { historyCreateSchema } from '@/lib/schemas';
 import { z } from 'zod';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 /**
  * GET /api/history
@@ -19,6 +20,9 @@ export async function GET() {
       where: { userId },
       orderBy: { timestamp: 'desc' },
       take: 50,
+      omit: {
+        image: true,
+      },
     });
 
     return NextResponse.json(items);
@@ -40,6 +44,14 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 });
+    }
+
+    const { limited } = await checkRateLimit(userId);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Trop de requêtes. Veuillez patienter une minute.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
     }
 
     let body: unknown;
@@ -89,6 +101,14 @@ export async function PATCH(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 });
+    }
+
+    const { limited } = await checkRateLimit(userId);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Trop de requêtes. Veuillez patienter une minute.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
     }
 
     let body: unknown;
@@ -143,6 +163,14 @@ export async function DELETE() {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 });
+    }
+
+    const { limited } = await checkRateLimit(userId);
+    if (limited) {
+      return NextResponse.json(
+        { error: 'Trop de requêtes. Veuillez patienter une minute.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
     }
 
     await prisma.historyItem.deleteMany({

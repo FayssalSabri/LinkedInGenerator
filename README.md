@@ -28,15 +28,15 @@
 <summary><b>Découvrir les écrans de l'application</b></summary>
 <br>
 
-| Studio Principal | Résultat & Intention Stratégique | Historique Utilisateur |
-| :---: | :---: | :---: |
+|                               Studio Principal                                |                          Résultat & Intention Stratégique                           |                        Historique Utilisateur                         |
+| :---------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: | :-------------------------------------------------------------------: |
 | <img src="Screenshots/Studio_page.png" width="300" alt="Interface du Studio"> | <img src="Screenshots/studio_page_apres_generation.png" width="300" alt="Résultat"> | <img src="Screenshots/History_page.png" width="300" alt="Historique"> |
 
 </details>
 
 ## Fonctionnalités Clés
 
-- **IA Stratégique (Groq Llama 3.3)** — Modes *Générer*, *Roaster* un brouillon et *Améliorer* avec du feedback itératif.
+- **IA Stratégique (Groq Llama 3.3)** — Modes _Générer_, _Roaster_ un brouillon et _Améliorer_ avec du feedback itératif.
 - **Génération d'images (Cloudflare Workers)** — Création de visuels d'accompagnement réalistes.
 - **Conformité LinkedIn** — Limite stricte des 1300 caractères garantie et structuration pour l'algorithme.
 - 🔍 **Transparence Éditoriale** — Chaque post s'accompagne d'une "Note d'intention" expliquant les choix de l'IA.
@@ -46,14 +46,14 @@
 
 ## Stack Technique
 
-| Catégorie | Technologies Utilisées |
-|---|---|
-| **Core** | Next.js (App Router), React 19, TypeScript |
-| **Styling** | Tailwind CSS, Framer Motion, Radix UI |
-| **Backend & BDD** | PostgreSQL, Prisma ORM |
-| **Auth & Sécurité**| Clerk, Upstash Redis (Rate limiting) |
+| Catégorie                     | Technologies Utilisées                      |
+| ----------------------------- | ------------------------------------------- |
+| **Core**                      | Next.js (App Router), React 19, TypeScript  |
+| **Styling**                   | Tailwind CSS, Framer Motion, Radix UI       |
+| **Backend & BDD**             | PostgreSQL, Prisma ORM                      |
+| **Auth & Sécurité**           | Clerk, Upstash Redis (Rate limiting)        |
 | **Intelligence Artificielle** | Groq (Llama 3.3 70B), Cloudflare Workers AI |
-| **Outils & Qualité** | Zod, React Hook Form, Vitest, Docker |
+| **Outils & Qualité**          | Zod, React Hook Form, Vitest, Docker        |
 
 ## Architecture Technique
 
@@ -99,6 +99,7 @@ flowchart TD
 Le projet est entièrement configuré pour tourner de manière isolée via Docker, incluant une base de données PostgreSQL locale et un mock Upstash Redis.
 
 ### Prérequis
+
 - Docker & Docker Compose
 - Clé API [Groq](https://console.groq.com/)
 - Compte [Clerk](https://clerk.com/)
@@ -106,18 +107,22 @@ Le projet est entièrement configuré pour tourner de manière isolée via Docke
 ### Lancement Rapide
 
 **1. Cloner et configurer l'environnement**
+
 ```bash
 cp .env.example .env.local
 ```
-*(Éditez `.env.local` pour y ajouter vos clés Clerk et Groq. Les variables PostgreSQL et Redis seront gérées automatiquement par Docker).*
+
+_(Éditez `.env.local` pour y ajouter vos clés Clerk et Groq. Les variables PostgreSQL et Redis seront gérées automatiquement par Docker)._
 
 **2. Démarrer les conteneurs**
+
 ```bash
 docker compose up --build -d
 ```
 
 **3. Initialiser la base de données (1ère exécution seulement)**
 Dans votre terminal, lancez la synchronisation Prisma :
+
 ```bash
 docker compose exec app pnpm exec prisma db push
 ```
@@ -144,18 +149,19 @@ pnpm dev
 
 ## Variables d'environnement
 
-| Variable | Obligatoire | Description |
-|---|:---:|---|
-| `GROQ_API_KEY` | ✅ | Clé pour l'inférence texte Groq |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | ✅ | Clé publique Clerk (Auth) |
-| `CLERK_SECRET_KEY` | ✅ | Clé privée Clerk (Auth) |
-| `DATABASE_URL` | ✅ | Connexion PostgreSQL (Prisma) |
-| `CF_IMAGE_WORKER_URL` | ❌ | URL de votre Cloudflare Worker (Images) |
-| `UPSTASH_REDIS_REST_URL` | ❌ | URL Redis (Optionnel en local, Requis en Prod) |
+| Variable                            | Obligatoire | Description                                    |
+| ----------------------------------- | :---------: | ---------------------------------------------- |
+| `GROQ_API_KEY`                      |     ✅      | Clé pour l'inférence texte Groq                |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` |     ✅      | Clé publique Clerk (Auth)                      |
+| `CLERK_SECRET_KEY`                  |     ✅      | Clé privée Clerk (Auth)                        |
+| `DATABASE_URL`                      |     ✅      | Connexion PostgreSQL (Prisma)                  |
+| `CF_IMAGE_WORKER_URL`               |     ❌      | URL de votre Cloudflare Worker (Images)        |
+| `UPSTASH_REDIS_REST_URL`            |     ❌      | URL Redis (Optionnel en local, Requis en Prod) |
 
 ## Qualité Code & CI/CD
 
 Chaque push ou Pull Request sur la branche `main` déclenche un workflow GitHub Actions rigoureux :
+
 1. Installation propre via `pnpm install --frozen-lockfile`
 2. Linting (ESLint + Prettier)
 3. Typechecking strict (`tsc --noEmit`)

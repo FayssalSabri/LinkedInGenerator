@@ -122,6 +122,7 @@ export default function Home() {
           }
         } catch (e) {
           console.warn('[history] Auto-save failed', e);
+          toast.error("La sauvegarde automatique dans l'historique a échoué.");
           setHistoryId(null);
         }
       } catch (err: unknown) {
