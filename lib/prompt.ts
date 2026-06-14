@@ -13,6 +13,7 @@ RÈGLES DE RÉDACTION :
 3. CONTEXTE : Garde le message principal intact, sauf si le feedback demande de le changer.
 
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
+Tu dois commencer ta réponse strictement par le caractère "{" et ne rien écrire avant ou après.
 {
   "publication": "La publication réécrite...",
   "note": "Explication courte de comment tu as intégré le feedback."
@@ -30,6 +31,7 @@ RÈGLES DE RÉDACTION :
 4. LIMITE STRICTE : La publication réécrite finale DOIT ABSOLUMENT faire moins de 1300 caractères (espaces compris).
 
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
+Tu dois commencer ta réponse strictement par le caractère "{" et ne rien écrire avant ou après.
 {
   "publication": "Le brouillon entièrement réécrit, prêt à être publié...",
   "note": "Ton 'Roast' : 3-4 lignes pointant ce qui n'allait pas dans l'original et comment tu l'as amélioré."
@@ -47,6 +49,7 @@ RÈGLES DE RÉDACTION :
 5. LIMITE STRICTE : La publication finale DOIT ABSOLUMENT faire moins de 1300 caractères (espaces compris). C'est une limite technique infranchissable. Rédige de manière concise.
 
 FORMAT DE RÉPONSE OBLIGATOIRE (JSON uniquement) :
+Tu dois commencer ta réponse strictement par le caractère "{" et ne rien écrire avant ou après.
 {
   "publication": "Contenu du post LinkedIn...",
   "note": "Note d'intention de 3 à 5 lignes expliquant les choix éditoriaux."

@@ -1,49 +1,61 @@
-# Forge Studio — LinkedIn Content Generator
+<div align="center">
+  <img src="public/logo.png" alt="Forge Studio Logo" width="120" />
+  <h1>Forge Studio</h1>
+  <p><strong>Le générateur stratégique de contenus LinkedIn propulsé par l'IA</strong></p>
+  
+  <p>
+    <a href="https://linked-in-generator-seven.vercel.app/"><strong>Accéder à l'application en ligne</strong></a> ·
+    <a href="./Restitution/restitution_linkedin_studio.pdf"><strong>Lire le rapport de restitution (PDF)</strong></a>
+  </p>
 
-🔗 **[Accéder à l'application en ligne](https://linked-in-generator-seven.vercel.app/)** | 📄 **[Consulter le rapport de restitution (PDF)](./Restitution/restitution_linkedin_studio.pdf)**
+  <p>
+    <img src="https://img.shields.io/badge/Next.js_14-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  </p>
+</div>
 
-Forge Studio est une application web dédiée à la génération stratégique de contenus pour LinkedIn. Interface soignée, prompts structurés, authentification Clerk, génération d'images via Cloudflare Workers, et historique auto-sauvegardé en base PostgreSQL.
+<hr />
 
-## Aperçu
+> **Forge Studio** est une application web dédiée à la génération stratégique de contenus pour LinkedIn. Interface soignée, prompts structurés, authentification Clerk, génération d'images via Cloudflare Workers, et historique auto-sauvegardé en base PostgreSQL.
 
-![Interface du Studio](Screenshots/Studio_page.png)
-_Interface principale de génération_
+## Aperçu de l'Interface
 
-![Résultat de la génération](Screenshots/studio_page_apres_generation.png)
-_Résultat avec note d'intention stratégique_
+<details open>
+<summary><b>Découvrir les écrans de l'application</b></summary>
+<br>
 
-![Historique des publications](Screenshots/History_page.png)
-_Historique des générations (par utilisateur)_
+|                               Studio Principal                                |                          Résultat & Intention Stratégique                           |                        Historique Utilisateur                         |
+| :---------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: | :-------------------------------------------------------------------: |
+| <img src="Screenshots/Studio_page.png" width="300" alt="Interface du Studio"> | <img src="Screenshots/studio_page_apres_generation.png" width="300" alt="Résultat"> | <img src="Screenshots/History_page.png" width="300" alt="Historique"> |
 
-## Fonctionnalités
+</details>
 
-- **Studio de génération** — Modes Générer, Roast et Améliorer (feedback itératif)
-- **Génération d'images IA** — Création de visuels d'accompagnement via Cloudflare Workers AI
-- **Conformité LinkedIn** — Validation Zod (entrée + sortie IA, max 1300 caractères)
-- **Note d'intention** — Transparence sur les choix éditoriaux de l'IA
-- **Authentification** — Clerk (sign-in / sign-up)
-- **Historique cloud** — Sauvegarde automatique des posts et attachement d'images en un clic via PostgreSQL + Prisma, isolé par `userId`
-- **Sécurité API** — Routes d'API réservées aux utilisateurs connectés
-- **Rate limiting** — 10 requêtes / minute / utilisateur (Upstash Redis en prod, mémoire en local)
-- **Cache** — Réponses identiques mises en cache 1 h (Redis ou mémoire)
+## Fonctionnalités Clés
 
-## Stack technique
+- **IA Stratégique (Groq Llama 3.3)** — Modes _Générer_, _Roaster_ un brouillon et _Améliorer_ avec du feedback itératif.
+- **Génération d'images (Cloudflare Workers)** — Création de visuels d'accompagnement réalistes.
+- **Conformité LinkedIn** — Limite stricte des 1300 caractères garantie et structuration pour l'algorithme.
+- 🔍 **Transparence Éditoriale** — Chaque post s'accompagne d'une "Note d'intention" expliquant les choix de l'IA.
+- 🔐 **Authentification Sécurisée** — Intégration de Clerk (Sign-in / Sign-up / Gestion de compte).
+- 💾 **Historique Cloud** — Auto-sauvegarde des publications en base PostgreSQL (via Prisma).
+- ⚡ **Performances Extrêmes** — Rate-limiting (Upstash Redis) et Cache persistant.
 
-| Composant          | Technologie                           |
-| ------------------ | ------------------------------------- |
-| Framework          | Next.js 16 (App Router)               |
-| Langage            | TypeScript (strict)                   |
-| Auth               | Clerk                                 |
-| Base de données    | PostgreSQL + Prisma                   |
-| Cache / rate limit | Upstash Redis (optionnel en local)    |
-| IA Texte           | Groq — Llama 3.3 70B                  |
-| IA Image           | Cloudflare Workers AI                 |
-| Validation         | Zod + React Hook Form                 |
-| UI                 | Tailwind CSS, Framer Motion, Radix UI |
-| Tests              | Vitest + Testing Library              |
-| CI                 | GitHub Actions (pnpm)                 |
+## Stack Technique
 
-## Architecture
+| Catégorie                     | Technologies Utilisées                      |
+| ----------------------------- | ------------------------------------------- |
+| **Core**                      | Next.js (App Router), React 19, TypeScript  |
+| **Styling**                   | Tailwind CSS, Framer Motion, Radix UI       |
+| **Backend & BDD**             | PostgreSQL, Prisma ORM                      |
+| **Auth & Sécurité**           | Clerk, Upstash Redis (Rate limiting)        |
+| **Intelligence Artificielle** | Groq (Llama 3.3 70B), Cloudflare Workers AI |
+| **Outils & Qualité**          | Zod, React Hook Form, Vitest, Docker        |
+
+## Architecture Technique
 
 ```mermaid
 flowchart TD
@@ -54,7 +66,7 @@ flowchart TD
     subgraph API [API Layer]
         GenAPI[POST /api/generate]
         ImgAPI[POST /api/generate-image]
-        HistAPI[POST & PATCH /api/history]
+        HistAPI[POST, PATCH, GET /api/history]
     end
 
     subgraph External [External Services]
@@ -82,101 +94,89 @@ flowchart TD
     HistAPI -->|Persist Data| DB
 ```
 
-```text
-├── app/
-│   ├── api/generate/       # Génération IA Texte (auth Clerk, rate limit, cache, Zod)
-│   ├── api/generate-image/ # Génération IA Image (auth Clerk, rate limit via Cloudflare Worker)
-│   ├── api/history/        # CRUD historique utilisateur
-│   ├── history/            # Page bibliothèque
-│   ├── sign-in/            # Clerk
-│   └── page.tsx            # Studio
-├── components/             # UI (Form, Result, LinkedInPost, …)
-├── lib/
-│   ├── schemas.ts          # Schémas Zod (entrée, sortie, historique)
-│   ├── prompt.ts           # Prompt engineering par mode
-│   ├── cache.ts            # Cache Redis / mémoire
-│   ├── rateLimit.ts        # Rate limit Redis / mémoire
-│   ├── generateClient.ts   # Client fetch
-│   └── db.ts               # Prisma singleton
-├── prisma/                 # Schéma + migrations
-├── cf-worker-image.js      # Script de déploiement pour le Cloudflare Worker
-└── __tests__/              # Tests unitaires et API
-```
+## Déploiement Local (Docker Recommandé)
 
-## Démarrage local
+Le projet est entièrement configuré pour tourner de manière isolée via Docker, incluant une base de données PostgreSQL locale et un mock Upstash Redis.
 
 ### Prérequis
 
-- Node.js 22+
-- [pnpm](https://pnpm.io/) 10+
+- Docker & Docker Compose
 - Clé API [Groq](https://console.groq.com/)
-- Application [Clerk](https://clerk.com/)
-- Base PostgreSQL (par ex. Supabase)
-- Compte Cloudflare (pour le Worker d'images)
+- Compte [Clerk](https://clerk.com/)
 
-### Installation
+### Lancement Rapide
+
+**1. Cloner et configurer l'environnement**
 
 ```bash
-pnpm install
 cp .env.example .env.local
-# Renseigner GROQ_API_KEY, Clerk, DATABASE_URL, DIRECT_URL, et les clés Cloudflare
+```
+
+_(Éditez `.env.local` pour y ajouter vos clés Clerk et Groq. Les variables PostgreSQL et Redis seront gérées automatiquement par Docker)._
+
+**2. Démarrer les conteneurs**
+
+```bash
+docker compose up --build -d
+```
+
+**3. Initialiser la base de données (1ère exécution seulement)**
+Dans votre terminal, lancez la synchronisation Prisma :
+
+```bash
+docker compose exec app pnpm exec prisma db push
+```
+
+L'application est maintenant disponible sur [http://localhost:3000](http://localhost:3000) ! 🎉
+
+## Démarrage Local (Classique / Sans Docker)
+
+Si vous préférez exécuter le projet sans Docker directement sur votre machine :
+
+```bash
+# 1. Installation des dépendances
+pnpm install
+
+# 2. Configuration (Renseignez DATABASE_URL vers un Postgres distant comme Supabase)
+cp .env.example .env.local
+
+# 3. Synchronisation de la Base de Données
 npx dotenv-cli -e .env.local -- prisma db push
+
+# 4. Lancement du serveur
 pnpm dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000).
+## Variables d'environnement
 
-### Variables d'environnement
+| Variable                            | Obligatoire | Description                                    |
+| ----------------------------------- | :---------: | ---------------------------------------------- |
+| `GROQ_API_KEY`                      |     ✅      | Clé pour l'inférence texte Groq                |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` |     ✅      | Clé publique Clerk (Auth)                      |
+| `CLERK_SECRET_KEY`                  |     ✅      | Clé privée Clerk (Auth)                        |
+| `DATABASE_URL`                      |     ✅      | Connexion PostgreSQL (Prisma)                  |
+| `CF_IMAGE_WORKER_URL`               |     ❌      | URL de votre Cloudflare Worker (Images)        |
+| `UPSTASH_REDIS_REST_URL`            |     ❌      | URL Redis (Optionnel en local, Requis en Prod) |
 
-| Variable                                              | Obligatoire | Description                   |
-| ----------------------------------------------------- | ----------- | ----------------------------- |
-| `GROQ_API_KEY`                                        | Oui         | Inférence texte Groq          |
-| `NEXT_PUBLIC_CLERK_*` / `CLERK_SECRET_KEY`            | Oui         | Auth Clerk                    |
-| `DATABASE_URL` / `DIRECT_URL`                         | Oui         | Base de données PostgreSQL    |
-| `CF_IMAGE_WORKER_URL`                                 | Optionnel   | URL du Cloudflare Worker      |
-| `Cloudflare_Account_ID` / `Cloudflare_API_Token`      | Optionnel   | Utilisation API Dispatch CF   |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Prod Vercel | Rate limit + cache distribués |
+## Qualité Code & CI/CD
 
-Sans Upstash, le dev local utilise un fallback en mémoire (non partagé entre instances serverless).
+Chaque push ou Pull Request sur la branche `main` déclenche un workflow GitHub Actions rigoureux :
 
-### Scripts
+1. Installation propre via `pnpm install --frozen-lockfile`
+2. Linting (ESLint + Prettier)
+3. Typechecking strict (`tsc --noEmit`)
+4. Tests Unitaires (`vitest`)
+5. Dry-run du Build Next.js
 
-| Commande            | Description              |
-| ------------------- | ------------------------ |
-| `pnpm dev`          | Serveur de développement |
-| `pnpm build`        | Build production         |
-| `pnpm test`         | Tests Vitest             |
-| `pnpm typecheck`    | Vérification TypeScript  |
-| `pnpm lint`         | ESLint                   |
-| `pnpm format:check` | Prettier                 |
+## Roadmap Évolutive
 
-## Qualité & CI/CD
-
-Chaque push/PR sur `main` exécute :
-
-1. `pnpm install --frozen-lockfile`
-2. `prisma generate`
-3. ESLint + Prettier
-4. `tsc --noEmit`
-5. Vitest
-6. `next build` (clés placeholder en CI)
-
-[Dependabot](.github/dependabot.yml) met à jour les dépendances npm et GitHub Actions chaque semaine.
-
-### Déploiement (Vercel recommandé)
-
-1. Lier le dépôt GitHub à Vercel
-2. Configurer toutes les variables listées ci-dessus.
-3. Ajouter Upstash Redis pour la production.
-4. Exécuter `npx prisma db push` ou `prisma migrate deploy` (CLI ou job CI/CD post-deploy).
-
-## Roadmap
-
-- [ ] Publication directe via API LinkedIn (OAuth)
-- [ ] RAG / voix utilisateur à partir de l'historique
-- [ ] Tests E2E Playwright (flux auth + génération)
-- [ ] Suppression d'une archive individuelle
+- [ ] **Publication Directe** — Intégration de l'API LinkedIn OAuth pour publier en 1 clic.
+- [ ] **Voix Utilisateur (RAG)** — Utilisation de l'historique pour affiner le style de l'IA (Fine-tuning du prompt).
+- [ ] **Stockage Externe** — Migration des images Base64 vers AWS S3 / R2.
+- [ ] **Tests E2E** — Validation des flux complexes via Playwright.
 
 ---
 
-_Conçu avec exigence pour les professionnels de la communication._
+<p align="center">
+  <i>Conçu avec exigence pour les professionnels de la communication.</i>
+</p>
