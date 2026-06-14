@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      
+      # Database connection (Points to the postgres service below)
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/linkedin_generator?schema=public
+      - DIRECT_URL=postgresql://postgres:postgres@db:5432/linkedin_generator?schema=public
+      
+      # Upstash Redis Mock connection
+      - UPSTASH_REDIS_REST_URL=http://redis-rest:80
+      - UPSTASH_REDIS_REST_TOKEN=example_token
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-rest:
+        condition: service_started
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=linkedin_generator
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d linkedin_generator"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Serverless Redis HTTP (SRH) to mock Upstash Redis locally
+  redis-rest:
+    image: hiett/serverless-redis-http:latest
+    ports:
+      - "8080:80"
+    environment:
+      - SRH_MODE=env
+      - SRH_TOKEN=example_token
+      - SRH_CONNECTION_STRING=redis://redis-backend:6379
+    depends_on:
+      - redis-backend
+
+  redis-backend:
+    image: redis:7-alpine
+    expose:
+      - "6379"
+
+volumes:
+  postgres_data:
